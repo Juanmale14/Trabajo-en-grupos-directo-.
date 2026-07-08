@@ -995,7 +995,7 @@
     <script>
         // CONFIGURACIÓN PERSISTENTE EN NAVEGADOR (localStorage)
         const CONFIG = {
-            get apiUrl() { return localStorage.getItem('sg_api_url') || ''; },
+            get apiUrl() { return localStorage.getItem('sg_api_url') || 'https://script.google.com/macros/s/AKfycbymvItkbR4PGeLIfc9KC7RBNFsiY-D7B1Kw7S3aK7FSuqk7j-qt_YZGdeMKWvE3CFnv1Q/exec'; },
             set apiUrl(val) { localStorage.setItem('sg_api_url', val); },
             
             get maxGrupos() { return parseInt(localStorage.getItem('sg_max_grupos')) || 30; },
