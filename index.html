@@ -705,7 +705,7 @@
                             <i class="fa-solid fa-paper-plane"></i> Enviar Incidencia Directa
                         </button>
                         
-                        <!-- BOTÓN ¡RETO COMPLETADO! CON NUEVA LEYENDA PEDIDA -->
+                        <!-- BOTÓN ¡RETO COMPLETADO! -->
                         <div style="border-top: 1px solid var(--border-color); padding-top: 1rem;">
                             <button type="button" onclick="submitFinalizacion()" class="btn-complete">
                                 <i class="fa-solid fa-flag-checkered"></i> ¡Reto Completado!
@@ -820,7 +820,7 @@
                         </div>
                     </div>
 
-                    <!-- Cuadro de Finalizaciones (Recibidas en Tiempo Real) -->
+                    <!-- Cuadro de Finalizaciones -->
                     <div class="card" style="margin-bottom: 0;">
                         <div class="section-header">
                             <div class="section-title">
@@ -840,7 +840,7 @@
 
                 </div>
 
-                <!-- COLUMNA DERECHA: SECCIONES DE RECEPCIÓN SEPARADAS (INCIDENCIAS vs VALORACIONES) -->
+                <!-- COLUMNA DERECHA: SECCIONES DE RECEPCIÓN SEPARADAS -->
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     
                     <!-- SECCIÓN 1: INCIDENCIAS EXCLUSIVAMENTE (Agrupado por Retos) -->
@@ -993,9 +993,11 @@
 
     <!-- LÓGICA DE JAVASCRIPT -->
     <script>
-        // CONFIGURACIÓN PERSISTENTE EN NAVEGADOR (localStorage)
+        // CONFIGURACIÓN PERSISTENTE EN NAVEGADOR CON TU URL YA PRECONFIGURADA POR DEFECTO
         const CONFIG = {
-            get apiUrl() { return localStorage.getItem('sg_api_url') || 'https://script.google.com/macros/s/AKfycbymvItkbR4PGeLIfc9KC7RBNFsiY-D7B1Kw7S3aK7FSuqk7j-qt_YZGdeMKWvE3CFnv1Q/exec'; },
+            get apiUrl() { 
+                return localStorage.getItem('sg_api_url') || 'https://script.google.com/macros/s/AKfycbymvItkbR4PGeLIfc9KC7RBNFsiY-D7B1Kw7S3aK7FSuqk7j-qt_YZGdeMKWvE3CFnv1Q/exec'; 
+            },
             set apiUrl(val) { localStorage.setItem('sg_api_url', val); },
             
             get maxGrupos() { return parseInt(localStorage.getItem('sg_max_grupos')) || 30; },
@@ -1264,7 +1266,6 @@
 
             if (duplicado) {
                 showToast('Vuestro grupo ya ha comunicado previamente la finalización de este reto.', 'warning');
-                // De todos modos desplazamos para comodidad del alumno
                 scrollToValoracion();
                 return;
             }
