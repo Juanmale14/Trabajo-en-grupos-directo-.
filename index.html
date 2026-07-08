@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seguimiento de los Grupos de Trabajo</title>
+    <!-- FontAwesome para los iconos de estrellas, grupos, retos y configuraciones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Fuente Inter para legibilidad premium -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* VARIABLES CSS PARA DISEÑO MODERNO */
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #e0e7ff;
+            --success: #059669;
+            --success-hover: #047857;
+            --success-light: #d1fae5;
+            --danger: #e11d48;
+            --danger-hover: #be123c;
+            --danger-light: #ffe4e6;
+            --warning: #d97706;
+            --warning-light: #fef3c7;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --transition: all 0.2s ease-in-out;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.02);
+        }
+
+        /* ESTILOS BASE */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ENCABEZADO */
+        header {
+            background-color: var(--primary);
+            color: #ffffff;
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+        }
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .logo-icon {
+            background-color: rgba(255,255,255,0.15);
+            padding: 0.5rem;
+            border-radius: var(--radius-md);
+            font-size: 1.25rem;
+        }
+        .logo-title h1 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+        }
+        .logo-title p {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.75);
+        }
+
+        /* SELECTOR DE ROL */
+        .role-selector {
+            display: flex;
+            background-color: rgba(0,0,0,0.2);
+            padding: 0.25rem;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .role-btn {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.7);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .role-btn.active {
+            background-color: var(--primary-hover);
+            color: #ffffff;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* CONTENEDOR PRINCIPAL */
+        main {
+            flex: 1;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* TARJETAS / CONTENEDORES */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+        .flex-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        @media (min-width: 992px) {
+            .flex-container {
+                grid-template-columns: 1fr 1fr;
+            }
+            .admin-layout {
+                display: grid;
+                grid-template-columns: 350px 1fr;
+                gap: 1.5rem;
+            }
+        }
+
+        /* BIENVENIDA Y BOTÓN DE INSTRUCCIONES */
+        .welcome-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-left: 5px solid var(--primary);
+        }
+        .welcome-text h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+        .welcome-text p {
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+            font-size: 0.95rem;
+        }
+        .btn-instructions {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-instructions:hover {
+            background-color: var(--primary);
+            color: #ffffff;
+        }
+
+        /* SECCIONES Y ENCABEZADOS */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .section-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+        .bg-1 { background-color: var(--primary-light); color: var(--primary); }
+        .bg-2 { background-color: var(--danger-light); color: var(--danger); }
+        .bg-3 { background-color: var(--success-light); color: var(--success); }
+
+        .section-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            letter-spacing: 0.05em;
+        }
+        .badge-red { background-color: var(--danger-light); color: var(--danger); }
+        .badge-green { background-color: var(--success-light); color: var(--success); }
+        .badge-primary { background-color: var(--primary-light); color: var(--primary); }
+
+        /* FORMULARIOS, INPUTS Y SELECTORES */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+        @media (min-width: 576px) {
+            .form-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        select, textarea, input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 0.9rem;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            outline: none;
+            transition: var(--transition);
+        }
+        select:focus, textarea:focus, input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+            background-color: #ffffff;
+        }
+        select:disabled {
+            background-color: var(--border-color);
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        /* ESTRELLAS INTERACTIVAS */
+        .stars-container {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin: 0.5rem 0;
+        }
+        .star-btn {
+            background: none;
+            border: none;
+            font-size: 1.75rem;
+            color: #cbd5e1;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .star-btn:hover {
+            transform: scale(1.15);
+        }
+        .star-active {
+            color: #fbbf24;
+        }
+        .star-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* BOTONES */
+        .btn {
+            width: 100%;
+            padding: 0.9rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn-red {
+            background-color: var(--danger);
+            color: #ffffff;
+        }
+        .btn-red:hover {
+            background-color: var(--danger-hover);
+            box-shadow: var(--shadow-lg);
+        }
+        .btn-green {
+            background-color: var(--success);
+            color: #ffffff;
+        }
+        .btn-green:hover {
+            background-color: var(--success-hover);
+            box-shadow: var(--shadow-lg);
+        }
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+            border-radius: 8px;
+            width: auto;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .btn-outline:hover {
+            background-color: var(--bg-main);
+            border-color: var(--text-muted);
+        }
+        .btn-complete {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border: 2px dashed var(--primary);
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            margin-top: 1.5rem;
+        }
+        .btn-complete:hover {
+            background-color: var(--primary);
+            color: #ffffff;
+            border-style: solid;
+        }
+
+        /* MODAL DE INSTRUCCIONES */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal-card {
+            background-color: #ffffff;
+            border-radius: var(--radius-lg);
+            max-width: 600px;
+            width: 100%;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            animation: modalSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes modalSlide {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-header {
+            background-color: var(--primary);
+            color: #ffffff;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-body {
+            padding: 1.5rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: var(--transition);
+        }
+        .modal-close:hover {
+            opacity: 1;
+        }
+        .step-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        .step-item {
+            display: flex;
+            gap: 1rem;
+        }
+        .step-num {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* TABLAS Y CONSOLA DE ADMINISTRADOR */
+        .admin-controls {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+        .filters-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        @media (min-width: 576px) {
+            .filters-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+        .table-responsive {
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            max-height: 400px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.825rem;
+            text-align: left;
+        }
+        th {
+            background-color: var(--bg-main);
+            color: var(--text-muted);
+            padding: 0.75rem 1rem;
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 2px solid var(--border-color);
+        }
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            background-color: #ffffff;
+        }
+        tr.group-header-row td {
+            background-color: #f1f5f9;
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 0.9rem;
+            border-bottom: 2px solid var(--primary-light);
+        }
+        .badge-type {
+            font-weight: 700;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .badge-type-inc { background-color: var(--danger-light); color: var(--danger); }
+        .badge-type-val { background-color: var(--success-light); color: var(--success); }
+
+        /* LISTADO COLUMNA DE FINALIZACIONES */
+        .completions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 0.25rem;
+        }
+        .completion-item-card {
+            background-color: var(--primary-light);
+            border: 1px solid var(--primary-hover);
+            border-radius: var(--radius-md);
+            padding: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* NOTIFICACIONES TOAST */
+        #toast-container {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            pointer-events: none;
+        }
+        .toast {
+            pointer-events: auto;
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.25rem;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 300px;
+            max-width: 400px;
+            animation: toastSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: var(--transition);
+        }
+        @keyframes toastSlide {
+            from { transform: translateY(15px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .toast.success { border-left: 4px solid var(--success); background-color: var(--success-light); }
+        .toast.error { border-left: 4px solid var(--danger); background-color: var(--danger-light); }
+        .toast.warning { border-left: 4px solid var(--warning); background-color: var(--warning-light); }
+
+        /* FOOTER */
+        footer {
+            background-color: #ffffff;
+            border-top: 1px solid var(--border-color);
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: auto;
+        }
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* UTILIDADES */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .gap-2 { gap: 0.5rem; }
+        .bold-num { font-weight: 800; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <!-- Encabezado y Selector de Roles -->
+    <header>
+        <div class="header-container">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-users-rectangle"></i>
+                </div>
+                <div class="logo-title">
+                    <h1>Seguimiento de Grupos</h1>
+                    <p>Coordinación Activa en Tiempo Real</p>
+                </div>
+            </div>
+
+            <div class="role-selector">
+                <button id="btn-role-user" onclick="switchRole('user')" class="role-btn active">
+                    <i class="fa-solid fa-user-edit"></i> Usuario
+                </button>
+                <button id="btn-role-admin" onclick="switchRole('admin')" class="role-btn">
+                    <i class="fa-solid fa-user-gear"></i> Administrador
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor Principal -->
+    <main>
+        <!-- Toast Notification Container -->
+        <div id="toast-container"></div>
+
+        <!-- ========================================== -->
+        <!-- VISTA DE USUARIO -->
+        <!-- ========================================== -->
+        <section id="view-user" class="view-section">
+            
+            <!-- Bienvenida y botón instrucciones -->
+            <div class="card welcome-box">
+                <div class="welcome-text">
+                    <h2>¡Estamos trabajando en equipo!</h2>
+                    <p>Comunica al ponente cualquier incidencia. Cuando terminéis el reto, podéis valorar vuestro aprendizaje.</p>
+                </div>
+                <button class="btn-instructions" onclick="toggleModal(true)">
+                    <i class="fa-solid fa-circle-question"></i> Instrucciones de uso
+                </button>
+            </div>
+
+            <!-- APARTADO 1: DATOS -->
+            <div class="card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <div class="section-number bg-1">1</div>
+                        <h3>Datos del Equipo</h3>
+                    </div>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="select-grupo">
+                            <i class="fa-solid fa-people-group"></i> Número de Grupo:
+                        </label>
+                        <select id="select-grupo">
+                            <!-- Rellenado dinámicamente -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="select-reto">
+                            <i class="fa-solid fa-trophy"></i> Número de Reto:
+                        </label>
+                        <select id="select-reto" disabled>
+                            <!-- Rellenado dinámicamente y bloqueado con el Reto Actual de Admin -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-container">
+                
+                <!-- APARTADO 2: INCIDENCIAS -->
+                <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div class="section-header">
+                            <div class="section-title">
+                                <div class="section-number bg-2">2</div>
+                                <h3>Comunicación de Incidencias</h3>
+                            </div>
+                            <span class="section-badge badge-red">Soporte Directo</span>
+                        </div>
+                        <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 1.25rem;">
+                            ¿Vuestro equipo se ha atascado en algo? Envíanos un aviso inmediato.
+                        </p>
+
+                        <div class="form-group" style="margin-bottom: 1.25rem;">
+                            <label><i class="fa-solid fa-triangle-exclamation" style="color: var(--danger);"></i> Nivel de Urgencia:</label>
+                            <div class="stars-container" id="star-urgencia"></div>
+                            <span id="label-urgencia" class="star-label">Selecciona una valoración</span>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.25rem;">
+                            <label for="text-incidencia">Explicación de la incidencia:</label>
+                            <textarea id="text-incidencia" rows="4" placeholder="Describe qué problema tenéis..."></textarea>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="button" onclick="submitIncidencia()" class="btn btn-red" style="margin-bottom: 1rem;">
+                            <i class="fa-solid fa-paper-plane"></i> Enviar Incidencia Directa
+                        </button>
+                        
+                        <!-- BOTÓN ¡RETO COMPLETADO! CON NUEVA LEYENDA PEDIDA -->
+                        <div style="border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                            <button type="button" onclick="submitFinalizacion()" class="btn-complete">
+                                <i class="fa-solid fa-flag-checkered"></i> ¡Reto Completado!
+                            </button>
+                            <p style="font-size: 0.72rem; color: var(--text-muted); text-align: center; margin-top: 0.4rem; font-style: italic; line-height: 1.3;">
+                                Pulsar solo cuando todas/os los miembros del grupo hayan finalizado
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- APARTADO 3: VALORACIÓN -->
+                <div class="card" id="seccion-valoracion" style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div class="section-header">
+                            <div class="section-title">
+                                <div class="section-number bg-3">3</div>
+                                <h3>Valoración del Aprendizaje</h3>
+                            </div>
+                            <span class="section-badge badge-green">Conclusión del Reto</span>
+                        </div>
+                        <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 1.25rem;">
+                            Valora el progreso del equipo al completar los hitos principales.
+                        </p>
+
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Nivel de Dificultad del reto:</label>
+                            <div class="flex-between">
+                                <div class="stars-container" id="star-dificultad"></div>
+                                <span id="label-dificultad" class="star-label">Sin valorar</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label>Nivel de Logro alcanzado:</label>
+                            <div class="flex-between">
+                                <div class="stars-container" id="star-logro"></div>
+                                <span id="label-logro" class="star-label">Sin valorar</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 1.25rem;">
+                            <label>Aplicabilidad a tu contexto educativo:</label>
+                            <div class="flex-between">
+                                <div class="stars-container" id="star-aplicabilidad"></div>
+                                <span id="label-aplicabilidad" class="star-label">Sin valorar</span>
+                            </div>
+                        </div>
+
+                        <div class="form-grid" style="margin-bottom: 1.25rem;">
+                            <div class="form-group">
+                                <label for="text-aprendizaje">Aprendizaje adquirido:</label>
+                                <textarea id="text-aprendizaje" rows="3" placeholder="¿Qué os lleváis del reto?"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="text-dudas">Dudas / Consultas:</label>
+                                <textarea id="text-dudas" rows="3" placeholder="¿Alguna cuestión pendiente?"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="submitValoracion()" class="btn btn-green">
+                        <i class="fa-solid fa-circle-check"></i> Enviar Valoración Completa
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VISTA DE ADMINISTRADOR -->
+        <!-- ========================================== -->
+        <section id="view-admin" class="view-section hidden">
+            <div class="admin-layout">
+                
+                <!-- COLUMNA IZQUIERDA: CONFIGURACIÓN Y PANEL DE FINALES -->
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    
+                    <!-- Configuración General -->
+                    <div class="card" style="margin-bottom: 0;">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <h3><i class="fa-solid fa-gears" style="color: var(--primary);"></i> Configuración</h3>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                            <!-- Reto Activo Sincronizado -->
+                            <div class="form-group">
+                                <label for="select-reto-actual" style="color: var(--primary);">
+                                    <i class="fa-solid fa-bullseye"></i> Reto Actual Sincronizado:
+                                </label>
+                                <select id="select-reto-actual" onchange="changeRetoActual()" style="border-color: var(--primary); font-weight: 700;">
+                                    <!-- Rellenado dinámicamente del 1 al 20 -->
+                                </select>
+                                <p style="font-size: 0.7rem; color: var(--text-muted);">
+                                    Esto fuerza de forma remota el reto que visualizan los usuarios en sus pantallas.
+                                </p>
+                            </div>
+
+                            <!-- URL Google Apps Script -->
+                            <div class="form-group">
+                                <label for="input-api-url">Apps Script Web App URL:</label>
+                                <input type="url" id="input-api-url" oninput="saveConfig()" placeholder="https://script.google.com/macros/s/.../exec">
+                            </div>
+
+                            <!-- Límites máximos de Grupos -->
+                            <div class="form-group">
+                                <label for="input-max-grupos">Nº Grupos Máx:</label>
+                                <input type="number" id="input-max-grupos" min="1" max="100" onchange="updateLimits()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cuadro de Finalizaciones (Recibidas en Tiempo Real) -->
+                    <div class="card" style="margin-bottom: 0;">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <h3><i class="fa-solid fa-flag-checkered" style="color: var(--primary);"></i> Retos Finalizados</h3>
+                            </div>
+                            <span id="completions-count" class="section-badge badge-primary">0</span>
+                        </div>
+                        <p class="text-muted" style="font-size: 0.75rem; margin-bottom: 1rem;">
+                            Grupos que han indicado la terminación del reto activo:
+                        </p>
+                        
+                        <div class="completions-list" id="completions-list-container">
+                            <!-- Se renderiza dinámicamente -->
+                            <p class="text-center text-muted" style="font-size: 0.75rem; padding: 1rem 0;">Aún ningún grupo ha terminado.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- COLUMNA DERECHA: SECCIONES DE RECEPCIÓN SEPARADAS (INCIDENCIAS vs VALORACIONES) -->
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    
+                    <!-- SECCIÓN 1: INCIDENCIAS EXCLUSIVAMENTE (Agrupado por Retos) -->
+                    <div class="card">
+                        <div class="section-header" style="flex-wrap: wrap; gap: 0.75rem;">
+                            <div class="section-title">
+                                <span class="section-badge badge-red" style="display: flex; align-items: center; gap: 0.25rem;">
+                                    <span style="width: 8px; height: 8px; background-color: var(--danger); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite;"></span>
+                                    En Vivo
+                                </span>
+                                <h3 style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Recepción de Incidencias (Solo Avisos)</h3>
+                            </div>
+                            
+                            <div class="admin-controls">
+                                <button onclick="clearSectionData('incidencias')" class="btn-outline" style="color: var(--danger);">
+                                    <i class="fa-solid fa-trash-can"></i> Limpiar Incidencias
+                                </button>
+                                <button onclick="exportSectionCSV('incidencias')" class="btn-outline">
+                                    <i class="fa-solid fa-file-excel" style="color: #107c41;"></i> Excel (CSV)
+                                </button>
+                                <button onclick="exportSectionMarkdown('incidencias')" class="btn-outline">
+                                    <i class="fa-solid fa-file-code" style="color: #000000;"></i> Markdown
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filtro de Incidencias -->
+                        <div class="filters-grid" style="grid-template-columns: 1fr;">
+                            <input type="text" id="incidencias-search" oninput="renderIncidenciasTable()" placeholder="Buscar por número de grupo o descripción del problema...">
+                        </div>
+
+                        <!-- Tabla de Incidencias -->
+                        <div class="table-responsive">
+                            <table id="incidencias-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 20%;">Hora / Grupo</th>
+                                        <th style="width: 25%;">Nivel de Urgencia</th>
+                                        <th>Descripción del Bloqueo / Incidencia</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="incidencias-table-body">
+                                    <!-- Dinámico -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- SECCIÓN 2: VALORACIONES DEL APRENDIZAJE EXCLUSIVAMENTE (Agrupado por Retos) -->
+                    <div class="card">
+                        <div class="section-header" style="flex-wrap: wrap; gap: 0.75rem;">
+                            <div class="section-title">
+                                <span class="section-badge badge-green" style="display: flex; align-items: center; gap: 0.25rem;">
+                                    <span style="width: 8px; height: 8px; background-color: var(--success); border-radius: 50%; display: inline-block;"></span>
+                                    Recibidas
+                                </span>
+                                <h3 style="color: var(--success);"><i class="fa-solid fa-graduation-cap"></i> Valoración del Aprendizaje (Solo Evaluaciones)</h3>
+                            </div>
+                            
+                            <div class="admin-controls">
+                                <button onclick="clearSectionData('valoraciones')" class="btn-outline" style="color: var(--danger);">
+                                    <i class="fa-solid fa-trash-can"></i> Limpiar Valoraciones
+                                </button>
+                                <button onclick="exportSectionCSV('valoraciones')" class="btn-outline">
+                                    <i class="fa-solid fa-file-excel" style="color: #107c41;"></i> Excel (CSV)
+                                </button>
+                                <button onclick="exportSectionMarkdown('valoraciones')" class="btn-outline">
+                                    <i class="fa-solid fa-file-code" style="color: #000000;"></i> Markdown
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filtro de Valoraciones -->
+                        <div class="filters-grid" style="grid-template-columns: 1fr;">
+                            <input type="text" id="valoraciones-search" oninput="renderValoracionesTable()" placeholder="Buscar por grupo o textos de aprendizaje...">
+                        </div>
+
+                        <!-- Tabla de Valoraciones -->
+                        <div class="table-responsive">
+                            <table id="valoraciones-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 20%;">Hora / Grupo</th>
+                                        <th style="width: 25%;">Métricas de Calificación</th>
+                                        <th>Respuestas / Reflexión Pedagógica</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="valoraciones-table-body">
+                                    <!-- Dinámico -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal de instrucciones -->
+    <div id="instructions-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 style="font-weight: 800; font-size: 1.1rem;"><i class="fa-solid fa-circle-info"></i> Instrucciones de Uso</h3>
+                <button class="modal-close" onclick="toggleModal(false)">&times;</button>
+            </div>
+            <div class="modal-body">
+                <ul class="step-list">
+                    <li class="step-item">
+                        <div class="step-num">1</div>
+                        <div>
+                            <strong style="display: block; margin-bottom: 0.15rem;">Identifica tu equipo</strong>
+                            Indica vuestro número de grupo en la primera sección. El número de reto viene establecido automáticamente por el ponente de la sesión.
+                        </div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-num">2</div>
+                        <div>
+                            <strong style="display: block; margin-bottom: 0.15rem;">¿Tenéis problemas? Envía una Incidencia</strong>
+                            Si el equipo se encuentra atascado o tiene alguna dificultad que impida el avance, rellenad el bloque de incidencias indicando la urgencia y haced clic en "Enviar Incidencia". Le llegará al ponente una notificación de forma inmediata.
+                        </div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-num">3</div>
+                        <div>
+                            <strong style="display: block; margin-bottom: 0.15rem;">¿Habéis terminado el Reto? ¡Pulsad bandera!</strong>
+                            Al finalizar todas las dinámicas del reto actual, haced clic en el botón **"¡Reto Completado!"** para que el ponente sepa en directo que habéis finalizado con éxito.
+                        </div>
+                    </li>
+                    <li class="step-item">
+                        <div class="step-num">4</div>
+                        <div>
+                            <strong style="display: block; margin-bottom: 0.15rem;">Valora vuestro aprendizaje</strong>
+                            Utilizad el bloque final de valoración del aprendizaje evaluando las estrellas correspondientes a dificultad, logro y aplicabilidad práctica, comentando también vuestros aprendizajes y dudas globales.
+                        </div>
+                    </li>
+                </ul>
+                <div style="margin-top: 1.5rem; text-align: right;">
+                    <button class="btn btn-green" style="width: auto; display: inline-flex;" onclick="toggleModal(false)">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <footer>
+        <p>Herramienta para el Seguimiento de Grupos creada en 2026 por <a href="https://blogsaverroes.juntadeandalucia.es/ellocodelamochila/" target="_blank">El loco de la mochila</a>. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- LÓGICA DE JAVASCRIPT -->
+    <script>
+        // CONFIGURACIÓN PERSISTENTE EN NAVEGADOR (localStorage)
+        const CONFIG = {
+            get apiUrl() { return localStorage.getItem('sg_api_url') || ''; },
+            set apiUrl(val) { localStorage.setItem('sg_api_url', val); },
+            
+            get maxGrupos() { return parseInt(localStorage.getItem('sg_max_grupos')) || 30; },
+            set maxGrupos(val) { localStorage.setItem('sg_max_grupos', val); },
+
+            get retoActual() { return parseInt(localStorage.getItem('sg_reto_actual')) || 1; },
+            set retoActual(val) { localStorage.setItem('sg_reto_actual', val); }
+        };
+
+        // Estado local de las estrellas del formulario del alumno
+        const USER_STATE = {
+            urgencia: 0,
+            dificultad: 0,
+            logro: 0,
+            aplicabilidad: 0
+        };
+
+        // Historial global de envíos (incidencias, valoraciones y finalizaciones)
+        let submissionsLocal = JSON.parse(localStorage.getItem('sg_submissions_local_v2')) || [];
+
+        // Canal BroadcastChannel para emulación en tiempo real local sin base de datos
+        const realTimeChannel = new BroadcastChannel('realtime_group_tracker_v2');
+        realTimeChannel.onmessage = (event) => {
+            if (event.data) {
+                if (event.data.type === 'NEW_SUBMISSION') {
+                    submissionsLocal.unshift(event.data.payload);
+                    localStorage.setItem('sg_submissions_local_v2', JSON.stringify(submissionsLocal));
+                    
+                    if (event.data.payload.type === 'incidencia') {
+                        showToast(`¡Nueva incidencia del Grupo ${event.data.payload.numeroGrupo}!`, 'error');
+                    } else if (event.data.payload.type === 'valoracion') {
+                        showToast(`¡Nueva valoración de aprendizaje del Grupo ${event.data.payload.numeroGrupo}!`, 'success');
+                    } else if (event.data.payload.type === 'finalizacion') {
+                        showToast(`🚩 ¡Grupo ${event.data.payload.numeroGrupo} completó el Reto ${event.data.payload.numeroReto}!`, 'warning');
+                    }
+
+                    renderAdminViews();
+                } else if (event.data.type === 'SYNC_RETO_ACTUAL') {
+                    const retoSelect = document.getElementById('select-reto');
+                    if (retoSelect) {
+                        retoSelect.value = event.data.payload;
+                        showToast(`El ponente ha establecido el Reto ${event.data.payload} como reto activo.`, 'warning');
+                    }
+                }
+            }
+        };
+
+        window.onload = function() {
+            // Cargar límites y configuraciones en la vista de administración
+            document.getElementById('input-api-url').value = CONFIG.apiUrl;
+            document.getElementById('input-max-grupos').value = CONFIG.maxGrupos;
+
+            // Rellenar selectores
+            rebuildSelects();
+            rebuildRetoActualAdmin();
+
+            // Sincronizar el reto actual configurado
+            document.getElementById('select-reto-actual').value = CONFIG.retoActual;
+            document.getElementById('select-reto').value = CONFIG.retoActual;
+
+            // Generar selectores de estrellas interactivos
+            createStarRating('star-urgencia', 'label-urgencia', 'urgencia', [
+                'Urgencia Leve (Informativo)', 
+                'Moderada (Dificulta el ritmo)', 
+                'Importante (Ralentización del equipo)', 
+                'Alta Urgencia (Estamos bloqueados)', 
+                'Crítica (Necesitamos intervención ya)'
+            ]);
+            createStarRating('star-dificultad', 'label-dificultad', 'dificultad', [
+                'Muy Fácil', 'Fácil / Sencillo', 'Dificultad Media', 'Bastante difícil', 'Complejidad Extrema'
+            ]);
+            createStarRating('star-logro', 'label-logro', 'logro', [
+                'Incompleto / Sin avances', 'Poco avance', 'Logro parcial', 'Objetivo alcanzado', '¡Superado con excelencia!'
+            ]);
+            createStarRating('star-aplicabilidad', 'label-aplicabilidad', 'aplicabilidad', [
+                'No aplicable', 'Apenas aplicable', 'Moderadamente útil', 'Muy aplicable', 'Esencial / Práctica prioritaria'
+            ]);
+
+            renderAdminViews();
+        };
+
+        // Modal de instrucciones
+        function toggleModal(show) {
+            const modal = document.getElementById('instructions-modal');
+            modal.style.display = show ? 'flex' : 'none';
+        }
+
+        // Generador de listas desplegables
+        function rebuildSelects() {
+            const selectGrupo = document.getElementById('select-grupo');
+            const selectReto = document.getElementById('select-reto');
+
+            const valGrupo = selectGrupo.value;
+
+            selectGrupo.innerHTML = '';
+            selectReto.innerHTML = '';
+
+            // Rellenar grupos de 1 a maxGrupos
+            for (let i = 1; i <= CONFIG.maxGrupos; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = `Grupo ${i}`;
+                selectGrupo.appendChild(opt);
+            }
+
+            // Rellenar retos del 1 al 20 por defecto en usuario
+            for (let i = 1; i <= 20; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = `Reto ${i}`;
+                selectReto.appendChild(opt);
+            }
+
+            if (valGrupo && valGrupo <= CONFIG.maxGrupos) {
+                selectGrupo.value = valGrupo;
+            }
+        }
+
+        // Inicializar selector de retos de administración (1 al 20)
+        function rebuildRetoActualAdmin() {
+            const selectRetoActual = document.getElementById('select-reto-actual');
+            selectRetoActual.innerHTML = '';
+            for (let i = 1; i <= 20; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = `Reto ${i}`;
+                selectRetoActual.appendChild(opt);
+            }
+        }
+
+        // Cambio del reto actual desde el administrador
+        function changeRetoActual() {
+            const nuevoReto = parseInt(document.getElementById('select-reto-actual').value);
+            CONFIG.retoActual = nuevoReto;
+            
+            // Sincronizar selectores
+            document.getElementById('select-reto').value = nuevoReto;
+
+            // Broadcast del nuevo reto
+            realTimeChannel.postMessage({
+                type: 'SYNC_RETO_ACTUAL',
+                payload: nuevoReto
+            });
+
+            showToast(`Reto actual fijado globalmente en el Reto ${nuevoReto}.`, 'warning');
+        }
+
+        // Generador de sistemas de valoración con estrellas
+        function createStarRating(containerId, labelId, stateField, textLabels) {
+            const container = document.getElementById(containerId);
+            const label = document.getElementById(labelId);
+            container.innerHTML = '';
+
+            for (let i = 1; i <= 5; i++) {
+                const star = document.createElement('button');
+                star.type = 'button';
+                star.className = 'star-btn';
+                star.innerHTML = '<i class="fa-solid fa-star"></i>';
+                
+                // Eventos visuales hover
+                star.onmouseover = () => highlightStars(container, i);
+                star.onmouseout = () => highlightStars(container, USER_STATE[stateField]);
+
+                // Evento click de asignación definitiva
+                star.onclick = () => {
+                    USER_STATE[stateField] = i;
+                    highlightStars(container, i);
+                    label.textContent = textLabels[i - 1];
+                    label.style.color = 'var(--primary)';
+                };
+
+                container.appendChild(star);
+            }
+        }
+
+        function highlightStars(container, count) {
+            const stars = container.querySelectorAll('.star-btn');
+            stars.forEach((star, index) => {
+                if (index < count) {
+                    star.classList.add('star-active');
+                } else {
+                    star.classList.remove('star-active');
+                }
+            });
+        }
+
+        // Control de pestañas/roles
+        function switchRole(role) {
+            const viewUser = document.getElementById('view-user');
+            const viewAdmin = document.getElementById('view-admin');
+            const btnUser = document.getElementById('btn-role-user');
+            const btnAdmin = document.getElementById('btn-role-admin');
+
+            if (role === 'user') {
+                viewUser.classList.remove('hidden');
+                viewAdmin.classList.add('hidden');
+                btnUser.classList.add('active');
+                btnAdmin.classList.remove('active');
+            } else {
+                viewUser.classList.add('hidden');
+                viewAdmin.classList.remove('hidden');
+                btnUser.classList.remove('active');
+                btnAdmin.classList.add('active');
+                renderAdminViews();
+            }
+        }
+
+        // Guardar configuración manual del admin
+        function saveConfig() {
+            CONFIG.apiUrl = document.getElementById('input-api-url').value;
+        }
+
+        function updateLimits() {
+            CONFIG.maxGrupos = Math.max(1, parseInt(document.getElementById('input-max-grupos').value) || 30);
+            rebuildSelects();
+            showToast('Límites de grupos actualizados.', 'success');
+        }
+
+        // --- EMISIÓN DE DATOS DESDE EL USUARIO ---
+
+        // Envío de Incidencia
+        function submitIncidencia() {
+            const grupo = document.getElementById('select-grupo').value;
+            const reto = document.getElementById('select-reto').value;
+            const urgencia = USER_STATE.urgencia;
+            const explicacion = document.getElementById('text-incidencia').value.trim();
+
+            if (urgencia === 0) {
+                showToast('Debes valorar el nivel de urgencia seleccionando las estrellas.', 'error');
+                return;
+            }
+            if (!explicacion) {
+                showToast('Por favor, escribe los detalles de la incidencia.', 'error');
+                return;
+            }
+
+            const payload = {
+                type: 'incidencia',
+                numeroGrupo: grupo,
+                numeroReto: reto,
+                urgenciaIncidencia: urgencia,
+                explicacionIncidencia: explicacion
+            };
+
+            sendSubmission(payload, 'Incidencia enviada al ponente de inmediato.');
+
+            // Limpiar formulario de incidencias
+            document.getElementById('text-incidencia').value = '';
+            USER_STATE.urgencia = 0;
+            highlightStars(document.getElementById('star-urgencia'), 0);
+            document.getElementById('label-urgencia').textContent = 'Selecciona una valoración';
+            document.getElementById('label-urgencia').style.color = 'var(--text-muted)';
+        }
+
+        // Envío de Finalización de Reto (Bandera)
+        function submitFinalizacion() {
+            const grupo = document.getElementById('select-grupo').value;
+            const reto = document.getElementById('select-reto').value;
+
+            // Evitar duplicados consecutivos innecesarios de finalización del mismo grupo en el mismo reto
+            const duplicado = submissionsLocal.some(item => 
+                item.type === 'finalizacion' && 
+                item.numeroGrupo === grupo && 
+                item.numeroReto === reto
+            );
+
+            if (duplicado) {
+                showToast('Vuestro grupo ya ha comunicado previamente la finalización de este reto.', 'warning');
+                // De todos modos desplazamos para comodidad del alumno
+                scrollToValoracion();
+                return;
+            }
+
+            const payload = {
+                type: 'finalizacion',
+                numeroGrupo: grupo,
+                numeroReto: reto,
+                urgenciaIncidencia: 'FINALIZADO',
+                explicacionIncidencia: `El Grupo ${grupo} indica la finalización exitosa del Reto ${reto}`
+            };
+
+            sendSubmission(payload, '¡Excelente! Aviso de reto finalizado enviado. Procede a valorar vuestro aprendizaje.');
+            
+            // Desplazar automáticamente hacia el bloque de autoevaluación pedagógica
+            scrollToValoracion();
+        }
+
+        function scrollToValoracion() {
+            const section = document.getElementById('seccion-valoracion');
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+                // Animamos levemente para captar la atención del alumno
+                section.style.outline = '3px solid var(--success)';
+                setTimeout(() => {
+                    section.style.outline = 'none';
+                }, 1500);
+            }
+        }
+
+        // Envío de Valoración de Aprendizaje
+        function submitValoracion() {
+            const grupo = document.getElementById('select-grupo').value;
+            const reto = document.getElementById('select-reto').value;
+            const dificultad = USER_STATE.dificultad;
+            const logro = USER_STATE.logro;
+            const aplicabilidad = USER_STATE.aplicabilidad;
+            const aprendizaje = document.getElementById('text-aprendizaje').value.trim();
+            const dudas = document.getElementById('text-dudas').value.trim();
+
+            if (dificultad === 0 || logro === 0 || aplicabilidad === 0) {
+                showToast('Debes calificar todos los campos de estrellas para continuar.', 'error');
+                return;
+            }
+            if (!aprendizaje) {
+                showToast('Cuéntanos brevemente vuestro aprendizaje en el cuadro de texto.', 'error');
+                return;
+            }
+
+            const payload = {
+                type: 'valoracion',
+                numeroGrupo: grupo,
+                numeroReto: reto,
+                nivelDificultad: dificultad,
+                nivelLogro: logro,
+                nivelAplicabilidad: aplicabilidad,
+                aprendizajeAdquirido: aprendizaje,
+                dudas: dudas
+            };
+
+            sendSubmission(payload, 'Valoración guardada y transmitida correctamente.');
+
+            // Limpiar formulario de valoración
+            document.getElementById('text-aprendizaje').value = '';
+            document.getElementById('text-dudas').value = '';
+            USER_STATE.dificultad = 0;
+            USER_STATE.logro = 0;
+            USER_STATE.aplicabilidad = 0;
+            highlightStars(document.getElementById('star-dificultad'), 0);
+            highlightStars(document.getElementById('star-logro'), 0);
+            highlightStars(document.getElementById('star-aplicabilidad'), 0);
+            document.getElementById('label-dificultad').textContent = 'Sin valorar';
+            document.getElementById('label-logro').textContent = 'Sin valorar';
+            document.getElementById('label-aplicabilidad').textContent = 'Sin valorar';
+            document.getElementById('label-dificultad').style.color = 'var(--text-muted)';
+            document.getElementById('label-logro').style.color = 'var(--text-muted)';
+            document.getElementById('label-aplicabilidad').style.color = 'var(--text-muted)';
+        }
+
+        // Transmisión de datos (Soporte local en vivo y Apps Script)
+        function sendSubmission(payload, successMsg) {
+            const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            const submission = {
+                timestamp: timeString,
+                id: Date.now(),
+                ...payload
+            };
+
+            // 1. Almacenamiento local
+            submissionsLocal.unshift(submission);
+            localStorage.setItem('sg_submissions_local_v2', JSON.stringify(submissionsLocal));
+
+            // 2. Propagación para otras pestañas abiertas
+            realTimeChannel.postMessage({
+                type: 'NEW_SUBMISSION',
+                payload: submission
+            });
+
+            // 3. Envío físico real a Google Sheets vía webhook de Apps Script
+            const targetUrl = CONFIG.apiUrl;
+            if (targetUrl && targetUrl.trim() !== '') {
+                fetch(targetUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(() => {
+                    showToast(successMsg, 'success');
+                })
+                .catch(err => {
+                    console.error("Fallo de red en Apps Script:", err);
+                    showToast('Guardado de manera local. Comprueba la configuración de tu Apps Script.', 'warning');
+                });
+            } else {
+                showToast(`${successMsg} (Modo Simulación: Sin conexión con Google Sheets).`, 'warning');
+            }
+
+            renderAdminViews();
+        }
+
+
+        // --- SECCIÓN DE ADMINISTRACIÓN ---
+
+        // Llamar a todos los renders de administración
+        function renderAdminViews() {
+            renderIncidenciasTable();
+            renderValoracionesTable();
+            renderCompletionsWidget();
+        }
+
+        // Widget lateral: Grupos que han finalizado el reto activo
+        function renderCompletionsWidget() {
+            const listContainer = document.getElementById('completions-list-container');
+            const countBadge = document.getElementById('completions-count');
+
+            const currentRetoActive = CONFIG.retoActual;
+
+            const completions = submissionsLocal.filter(item => 
+                item.type === 'finalizacion' && parseInt(item.numeroReto) === currentRetoActive
+            );
+
+            countBadge.textContent = completions.length;
+
+            if (completions.length === 0) {
+                listContainer.innerHTML = `
+                    <p class="text-center text-muted" style="font-size: 0.75rem; padding: 1rem 0;">
+                        Ningún grupo ha finalizado el Reto ${currentRetoActive} aún.
+                    </p>
+                `;
+                return;
+            }
+
+            listContainer.innerHTML = '';
+            completions.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'completion-item-card';
+                div.innerHTML = `
+                    <div>
+                        <strong style="color: var(--primary);">Grupo ${item.numeroGrupo}</strong>
+                        <span style="font-size: 0.7rem; color: var(--text-muted); display: block;">Reto activo: ${item.numeroReto}</span>
+                    </div>
+                    <span style="font-size: 0.75rem; font-weight: 700; color: var(--primary-hover);">
+                        <i class="fa-solid fa-clock"></i> ${item.timestamp}
+                    </span>
+                `;
+                listContainer.appendChild(div);
+            });
+        }
+
+        // Tabla 1: Renderizar Incidencias (Agrupado por Retos)
+        function renderIncidenciasTable() {
+            const tbody = document.getElementById('incidencias-table-body');
+            const searchVal = document.getElementById('incidencias-search').value.toLowerCase();
+
+            tbody.innerHTML = '';
+
+            const incidenciasData = submissionsLocal.filter(item => {
+                const matchesSearch = 
+                    item.numeroGrupo.toString().includes(searchVal) ||
+                    item.numeroReto.toString().includes(searchVal) ||
+                    (item.explicacionIncidencia && item.explicacionIncidencia.toLowerCase().includes(searchVal));
+
+                return item.type === 'incidencia' && matchesSearch;
+            });
+
+            if (incidenciasData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="text-center" style="padding: 2.5rem; color: var(--text-muted);">
+                            No hay incidencias registradas.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Agrupar por reto
+            const grouped = {};
+            incidenciasData.forEach(item => {
+                const rKey = `Reto ${item.numeroReto}`;
+                if (!grouped[rKey]) grouped[rKey] = [];
+                grouped[rKey].push(item);
+            });
+
+            // Orden descendente por retos
+            const sortedKeys = Object.keys(grouped).sort((a, b) => parseInt(b.replace('Reto ', '')) - parseInt(a.replace('Reto ', '')));
+
+            sortedKeys.forEach(reto => {
+                // Cabecera del reto
+                const hRow = document.createElement('tr');
+                hRow.className = 'group-header-row';
+                hRow.innerHTML = `<td colspan="3"><i class="fa-solid fa-trophy"></i> ${reto} <span style="font-size: 0.72rem; font-weight: 400; color: var(--text-muted);">(${grouped[reto].length} incidencias)</span></td>`;
+                tbody.appendChild(hRow);
+
+                grouped[reto].forEach(item => {
+                    const tr = document.createElement('tr');
+                    
+                    const starsHtml = Array(5).fill(0).map((_, i) => 
+                        `<i class="fa-solid fa-star ${i < item.urgenciaIncidencia ? 'star-active' : ''}"></i>`
+                    ).join('');
+
+                    tr.innerHTML = `
+                        <td style="font-weight: 700;">
+                            <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal; display: block;">${item.timestamp}</span>
+                            <span style="color: var(--danger);">Grupo ${item.numeroGrupo}</span>
+                        </td>
+                        <td>
+                            <div style="color: #fbbf24; font-size: 0.75rem; display: flex; gap: 0.1rem; align-items: center;">
+                                ${starsHtml} <span style="color: var(--text-muted); margin-left: 0.25rem;">(${item.urgenciaIncidencia}/5)</span>
+                            </div>
+                        </td>
+                        <td style="font-style: italic; color: #334155; font-weight: 500;">
+                            "${item.explicacionIncidencia}"
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
+        // Tabla 2: Renderizar Valoraciones de Aprendizaje (Agrupado por Retos)
+        function renderValoracionesTable() {
+            const tbody = document.getElementById('valoraciones-table-body');
+            const searchVal = document.getElementById('valoraciones-search').value.toLowerCase();
+
+            tbody.innerHTML = '';
+
+            const valoracionesData = submissionsLocal.filter(item => {
+                const matchesSearch = 
+                    item.numeroGrupo.toString().includes(searchVal) ||
+                    item.numeroReto.toString().includes(searchVal) ||
+                    (item.aprendizajeAdquirido && item.aprendizajeAdquirido.toLowerCase().includes(searchVal)) ||
+                    (item.dudas && item.dudas.toLowerCase().includes(searchVal));
+
+                return item.type === 'valoracion' && matchesSearch;
+            });
+
+            if (valoracionesData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="text-center" style="padding: 2.5rem; color: var(--text-muted);">
+                            No hay valoraciones de aprendizaje registradas.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Agrupar por reto
+            const grouped = {};
+            valoracionesData.forEach(item => {
+                const rKey = `Reto ${item.numeroReto}`;
+                if (!grouped[rKey]) grouped[rKey] = [];
+                grouped[rKey].push(item);
+            });
+
+            // Orden descendente por retos
+            const sortedKeys = Object.keys(grouped).sort((a, b) => parseInt(b.replace('Reto ', '')) - parseInt(a.replace('Reto ', '')));
+
+            sortedKeys.forEach(reto => {
+                // Cabecera del reto
+                const hRow = document.createElement('tr');
+                hRow.className = 'group-header-row';
+                hRow.innerHTML = `<td colspan="3"><i class="fa-solid fa-trophy"></i> ${reto} <span style="font-size: 0.72rem; font-weight: 400; color: var(--text-muted);">(${grouped[reto].length} valoraciones)</span></td>`;
+                tbody.appendChild(hRow);
+
+                grouped[reto].forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="font-weight: 700;">
+                            <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal; display: block;">${item.timestamp}</span>
+                            <span style="color: var(--success);">Grupo ${item.numeroGrupo}</span>
+                        </td>
+                        <td>
+                            <div style="display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">
+                                <span>Dificultad: <span class="bold-num">${item.nivelDificultad}/5</span></span>
+                                <span>Logro: <span class="bold-num">${item.nivelLogro}/5</span></span>
+                                <span>Aplicabilidad: <span class="bold-num">${item.nivelAplicabilidad}/5</span></span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-size: 0.8rem; background-color: var(--bg-main); padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                                <div style="margin-bottom: 0.25rem;"><strong>Aprendizaje:</strong> ${item.aprendizajeAdquirido}</div>
+                                ${item.dudas ? `<div style="color: var(--danger); margin-top: 0.25rem;"><strong>Duda/Consulta:</strong> ${item.dudas}</div>` : ''}
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
+        // Limpieza de datos selectiva para cada tabla
+        function clearSectionData(section) {
+            const label = section === 'incidencias' ? 'las incidencias' : 'las valoraciones de aprendizaje';
+            if (confirm(`¿Deseas vaciar el registro local de ${label}? Esta acción es irreversible para la consola de administrador local.`)) {
+                if (section === 'incidencias') {
+                    submissionsLocal = submissionsLocal.filter(item => item.type !== 'incidencia');
+                } else {
+                    submissionsLocal = submissionsLocal.filter(item => item.type !== 'valoracion');
+                }
+                localStorage.setItem('sg_submissions_local_v2', JSON.stringify(submissionsLocal));
+                renderAdminViews();
+                showToast(`Se ha vaciado la sección de ${label}.`, 'success');
+            }
+        }
+
+        // --- EXPORTACIÓN DE INCIDENCIAS ---
+
+        function exportSectionCSV(section) {
+            const dataToExport = submissionsLocal.filter(item => item.type === (section === 'incidencias' ? 'incidencia' : 'valoracion'));
+
+            if (dataToExport.length === 0) {
+                showToast('No hay datos disponibles en esta sección para exportar.', 'error');
+                return;
+            }
+
+            let csvContent = '\uFEFF'; // Byte order mark para compatibilidad de acentos con Excel en español
+
+            if (section === 'incidencias') {
+                const headers = ['Hora', 'Grupo', 'Reto', 'Nivel Urgencia', 'Descripción del bloqueo'];
+                csvContent += headers.map(h => `"${h}"`).join(';') + '\n';
+                dataToExport.forEach(item => {
+                    const row = [
+                        item.timestamp,
+                        item.numeroGrupo,
+                        item.numeroReto,
+                        item.urgenciaIncidencia,
+                        item.explicacionIncidencia ? item.explicacionIncidencia.replace(/"/g, '""') : ''
+                    ];
+                    csvContent += row.map(val => `"${val}"`).join(';') + '\n';
+                });
+                downloadBlob(csvContent, 'incidencias_recibidas.csv', 'text/csv;charset=utf-8;');
+            } else {
+                const headers = ['Hora', 'Grupo', 'Reto', 'Dificultad', 'Logro', 'Aplicabilidad', 'Aprendizaje Adquirido', 'Dudas/Consultas'];
+                csvContent += headers.map(h => `"${h}"`).join(';') + '\n';
+                dataToExport.forEach(item => {
+                    const row = [
+                        item.timestamp,
+                        item.numeroGrupo,
+                        item.numeroReto,
+                        item.nivelDificultad,
+                        item.nivelLogro,
+                        item.nivelAplicabilidad,
+                        item.aprendizajeAdquirido ? item.aprendizajeAdquirido.replace(/"/g, '""') : '',
+                        item.dudas ? item.dudas.replace(/"/g, '""') : ''
+                    ];
+                    csvContent += row.map(val => `"${val}"`).join(';') + '\n';
+                });
+                downloadBlob(csvContent, 'valoraciones_aprendizaje.csv', 'text/csv;charset=utf-8;');
+            }
+
+            showToast('Archivo de Excel (CSV) exportado correctamente.', 'success');
+        }
+
+        function exportSectionMarkdown(section) {
+            const dataToExport = submissionsLocal.filter(item => item.type === (section === 'incidencias' ? 'incidencia' : 'valoracion'));
+
+            if (dataToExport.length === 0) {
+                showToast('No hay datos disponibles en esta sección para exportar.', 'error');
+                return;
+            }
+
+            let md = '';
+            const timestampStr = `${new Date().toLocaleDateString()} a las ${new Date().toLocaleTimeString()}`;
+
+            if (section === 'incidencias') {
+                md += `# Registro de Incidencias de los Grupos - El Loco de la Mochila\n\n`;
+                md += `Informe generado el: ${timestampStr}\n\n`;
+
+                // Agrupamos por retos
+                const grouped = {};
+                dataToExport.forEach(item => {
+                    const k = `Reto ${item.numeroReto}`;
+                    if (!grouped[k]) grouped[k] = [];
+                    grouped[k].push(item);
+                });
+
+                const sorted = Object.keys(grouped).sort((a,b) => parseInt(a.replace('Reto ','')) - parseInt(b.replace('Reto ','')));
+
+                sorted.forEach(reto => {
+                    md += `## ${reto}\n\n`;
+                    md += `| Hora / Grupo | Nivel de Urgencia | Explicación del Bloqueo |\n`;
+                    md += `| :--- | :--- | :--- |\n`;
+                    grouped[reto].forEach(item => {
+                        md += `| **Grupo ${item.numeroGrupo}** <br> ${item.timestamp} | ${item.urgenciaIncidencia}/5 | ${item.explicacionIncidencia} |\n`;
+                    });
+                    md += `\n`;
+                });
+                downloadBlob(md, 'informe_incidencias.md', 'text/markdown;charset=utf-8;');
+            } else {
+                md += `# Registro de Valoraciones del Aprendizaje - El Loco de la Mochila\n\n`;
+                md += `Informe generado el: ${timestampStr}\n\n`;
+
+                // Agrupamos por retos
+                const grouped = {};
+                dataToExport.forEach(item => {
+                    const k = `Reto ${item.numeroReto}`;
+                    if (!grouped[k]) grouped[k] = [];
+                    grouped[k].push(item);
+                });
+
+                const sorted = Object.keys(grouped).sort((a,b) => parseInt(a.replace('Reto ','')) - parseInt(b.replace('Reto ','')));
+
+                sorted.forEach(reto => {
+                    md += `## ${reto}\n\n`;
+                    md += `| Hora / Grupo | Métricas | Aprendizaje / Dudas |\n`;
+                    md += `| :--- | :--- | :--- |\n`;
+                    grouped[reto].forEach(item => {
+                        const metricas = `Dificultad: **${item.nivelDificultad}/5** <br> Logro: **${item.nivelLogro}/5** <br> Aplicabilidad: **${item.nivelAplicabilidad}/5**`;
+                        const respuestas = `**Aprendizaje:** ${item.aprendizajeAdquirido} ${item.dudas ? `<br>**Dudas:** _${item.dudas}_` : ''}`;
+                        md += `| **Grupo ${item.numeroGrupo}** <br> ${item.timestamp} | ${metricas} | ${respuestas} |\n`;
+                    });
+                    md += `\n`;
+                });
+                downloadBlob(md, 'informe_valoraciones.md', 'text/markdown;charset=utf-8;');
+            }
+
+            showToast('Informe estructurado en Markdown descargado.', 'success');
+        }
+
+        // Helper para descargar archivos generados por JS
+        function downloadBlob(content, filename, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Toasts dinámicos
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let icon = '<i class="fa-solid fa-circle-info" style="color: var(--primary);"></i>';
+            if (type === 'success') {
+                icon = '<i class="fa-solid fa-circle-check" style="color: var(--success);"></i>';
+            } else if (type === 'error') {
+                icon = '<i class="fa-solid fa-circle-xmark" style="color: var(--danger);"></i>';
+            } else if (type === 'warning') {
+                icon = '<i class="fa-solid fa-triangle-exclamation" style="color: var(--warning);"></i>';
+            }
+
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div style="font-size: 1.25rem; display: flex; align-items: center;">${icon}</div>
+                <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-main);">${message}</div>
+            `;
+
+            container.appendChild(toast);
+
+            // Desvanecer y retirar automáticamente
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(15px)';
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 4500);
+        }
+    </script>
+</body>
+</html>
