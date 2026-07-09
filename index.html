@@ -1906,6 +1906,43 @@
                 }, 300);
             }, 4500);
         }
+        // Función para descargar los datos reales desde Google Sheets
+function cargarDatosDesdeGoogle() {
+    // Solo hacemos la consulta si estamos visualizando la pantalla de Administrador
+    const viewAdmin = document.getElementById('view-admin');
+    if (viewAdmin && viewAdmin.classList.contains('hidden')) return;
+
+    // "targetUrl" debe ser la misma URL de tu Apps Script terminada en /exec
+    // IMPORTANTE: Asegúrate de que coincida con la URL que pusiste en sendSubmission
+    const targetUrl = CONFIG.apiUrl; 
+
+    if (!targetUrl || targetUrl.trim() === '') return;
+
+    fetch(targetUrl)
+        .then(response => response.json())
+        .then(data => {
+            // Combinamos las incidencias/finalizaciones y las valoraciones en la lista local de la pantalla
+            const nuevasSubmissions = [];
+            
+            if (data.incidencias) {
+                // Las ordenamos al revés para que las más nuevas aparezcan arriba
+                data.incidencias.reverse().forEach(item => nuevasSubmissions.push(item));
+            }
+            if (data.valoraciones) {
+                data.valoraciones.reverse().forEach(item => nuevasSubmissions.push(item));
+            }
+
+            // Si hay datos nuevos en Google Sheets, actualizamos la pantalla del administrador
+            if (nuevasSubmissions.length > 0) {
+                submissionsLocal = nuevasSubmissions;
+                renderAdminViews();
+            }
+        })
+        .catch(err => console.error("Error sincronizando el panel de administrador con Google Sheets:", err));
+}
+
+// Activar una consulta automática a Google Sheets cada 5 segundos (5000 milisegundos)
+setInterval(cargarDatosDesdeGoogle, 5000);
     </script>
 </body>
 </html>
