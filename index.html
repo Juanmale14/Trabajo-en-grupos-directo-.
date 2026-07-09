@@ -1403,7 +1403,7 @@
             document.getElementById('label-urgencia').style.color = 'var(--text-muted)';
         }
 
-        // Envío de Finalización de Reto (Bandera)
+        // Envío de Finalización de Reto (Bandera) - CORREGIDO
         function submitFinalizacion() {
             const grupo = document.getElementById('select-grupo').value;
             const reto = document.getElementById('select-reto').value;
@@ -1411,8 +1411,8 @@
             // Evitar duplicados consecutivos innecesarios de finalización del mismo grupo en el mismo reto
             const duplicado = submissionsLocal.some(item => 
                 item.type === 'finalizacion' && 
-                item.numeroGrupo === grupo && 
-                item.numeroReto === reto
+                item.numeroGrupo.toString() === grupo.toString() && 
+                item.numeroReto.toString() === reto.toString()
             );
 
             if (duplicado) {
@@ -1425,8 +1425,8 @@
                 type: 'finalizacion',
                 numeroGrupo: grupo,
                 numeroReto: reto,
-                urgenciaIncidencia: 'FINALIZADO',
-                explicacionIncidencia: `El Grupo ${grupo} indica la finalización exitosa del Reto ${reto}`
+                urgenciaIncidencia: '5', // Usamos un número limpio para evitar fallos de lectura en la hoja
+                explicacionIncidencia: `¡RETO COMPLETADO! El grupo ha finalizado todas las dinámicas con éxito.`
             };
 
             sendSubmission(payload, '¡Excelente! Aviso de reto finalizado enviado. Procede a valorar vuestro aprendizaje.');
@@ -1439,7 +1439,6 @@
             const section = document.getElementById('seccion-valoracion');
             if (section) {
                 section.scrollIntoView({ behavior: 'smooth' });
-                // Animamos levemente para captar la atención del alumno
                 section.style.outline = '3px solid var(--success)';
                 setTimeout(() => {
                     section.style.outline = 'none';
@@ -1516,8 +1515,9 @@
                 payload: submission
             });
 
-            // 3. Envío físico real a Google Sheets vía webhook de Apps Script
-            const targetUrl = "https://script.google.com/macros/s/AKfycbxN0tqCy3FIo10SfZAvtrIfp418uC1Snje0r3IL3tT_aQRJfQ5VnZo07wMt7voi-DKG4g/exec";
+            // 3. Envío físico real a Google Sheets - URL FORZADA DIRECTA
+            const targetUrl = "TU_URL_DE_APPS_SCRIPT_AQUI"; 
+            
             if (targetUrl && targetUrl.trim() !== '') {
                 fetch(targetUrl, {
                     method: 'POST',
@@ -1541,21 +1541,17 @@
             renderAdminViews();
         }
 
-
         // --- SECCIÓN DE ADMINISTRACIÓN ---
 
-        // Llamar a todos los renders de administración
         function renderAdminViews() {
             renderIncidenciasTable();
             renderValoracionesTable();
             renderCompletionsWidget();
         }
 
-        // Widget lateral: Grupos que han finalizado el reto activo
         function renderCompletionsWidget() {
             const listContainer = document.getElementById('completions-list-container');
             const countBadge = document.getElementById('completions-count');
-
             const currentRetoActive = CONFIG.retoActual;
 
             const completions = submissionsLocal.filter(item => 
@@ -1590,11 +1586,9 @@
             });
         }
 
-        // Tabla 1: Renderizar Incidencias (Agrupado por Retos)
         function renderIncidenciasTable() {
             const tbody = document.getElementById('incidencias-table-body');
             const searchVal = document.getElementById('incidencias-search').value.toLowerCase();
-
             tbody.innerHTML = '';
 
             const incidenciasData = submissionsLocal.filter(item => {
@@ -1607,17 +1601,10 @@
             });
 
             if (incidenciasData.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="3" class="text-center" style="padding: 2.5rem; color: var(--text-muted);">
-                            No hay incidencias registradas.
-                        </td>
-                    </tr>
-                `;
+                tbody.innerHTML = `<tr><td colspan="3" class="text-center" style="padding: 2.5rem; color: var(--text-muted);">No hay incidencias registradas.</td></tr>`;
                 return;
             }
 
-            // Agrupar por reto
             const grouped = {};
             incidenciasData.forEach(item => {
                 const rKey = `Reto ${item.numeroReto}`;
@@ -1625,11 +1612,9 @@
                 grouped[rKey].push(item);
             });
 
-            // Orden descendente por retos
             const sortedKeys = Object.keys(grouped).sort((a, b) => parseInt(b.replace('Reto ', '')) - parseInt(a.replace('Reto ', '')));
 
             sortedKeys.forEach(reto => {
-                // Cabecera del reto
                 const hRow = document.createElement('tr');
                 hRow.className = 'group-header-row';
                 hRow.innerHTML = `<td colspan="3"><i class="fa-solid fa-trophy"></i> ${reto} <span style="font-size: 0.72rem; font-weight: 400; color: var(--text-muted);">(${grouped[reto].length} incidencias)</span></td>`;
@@ -1637,35 +1622,25 @@
 
                 grouped[reto].forEach(item => {
                     const tr = document.createElement('tr');
-                    
-                    const starsHtml = Array(5).fill(0).map((_, i) => 
-                        `<i class="fa-solid fa-star ${i < item.urgenciaIncidencia ? 'star-active' : ''}"></i>`
-                    ).join('');
-
+                    const starsHtml = Array(5).fill(0).map((_, i) => `<i class="fa-solid fa-star ${i < item.urgenciaIncidencia ? 'star-active' : ''}"></i>`).join('');
                     tr.innerHTML = `
                         <td style="font-weight: 700;">
                             <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal; display: block;">${item.timestamp}</span>
                             <span style="color: var(--danger);">Grupo ${item.numeroGrupo}</span>
                         </td>
                         <td>
-                            <div style="color: #fbbf24; font-size: 0.75rem; display: flex; gap: 0.1rem; align-items: center;">
-                                ${starsHtml} <span style="color: var(--text-muted); margin-left: 0.25rem;">(${item.urgenciaIncidencia}/5)</span>
-                            </div>
+                            <div style="color: #fbbf24; font-size: 0.75rem; display: flex; gap: 0.1rem; align-items: center;">${starsHtml}</div>
                         </td>
-                        <td style="font-style: italic; color: #334155; font-weight: 500;">
-                            "${item.explicacionIncidencia}"
-                        </td>
+                        <td style="font-style: italic; color: #334155; font-weight: 500;">"${item.explicacionIncidencia}"</td>
                     `;
                     tbody.appendChild(tr);
                 });
             });
         }
 
-        // Tabla 2: Renderizar Valoraciones de Aprendizaje (Agrupado por Retos)
         function renderValoracionesTable() {
             const tbody = document.getElementById('valoraciones-table-body');
             const searchVal = document.getElementById('valoraciones-search').value.toLowerCase();
-
             tbody.innerHTML = '';
 
             const valoracionesData = submissionsLocal.filter(item => {
@@ -1679,17 +1654,10 @@
             });
 
             if (valoracionesData.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="3" class="text-center" style="padding: 2.5rem; color: var(--text-muted);">
-                            No hay valoraciones de aprendizaje registradas.
-                        </td>
-                    </tr>
-                `;
+                tbody.innerHTML = `<tr><td colspan="3" class="text-center" style="padding: 2.5rem; color: var(--text-muted);">No hay valoraciones de aprendizaje registradas.</td></tr>`;
                 return;
             }
 
-            // Agrupar por reto
             const grouped = {};
             valoracionesData.forEach(item => {
                 const rKey = `Reto ${item.numeroReto}`;
@@ -1697,11 +1665,9 @@
                 grouped[rKey].push(item);
             });
 
-            // Orden descendente por retos
             const sortedKeys = Object.keys(grouped).sort((a, b) => parseInt(b.replace('Reto ', '')) - parseInt(a.replace('Reto ', '')));
 
             sortedKeys.forEach(reto => {
-                // Cabecera del reto
                 const hRow = document.createElement('tr');
                 hRow.className = 'group-header-row';
                 hRow.innerHTML = `<td colspan="3"><i class="fa-solid fa-trophy"></i> ${reto} <span style="font-size: 0.72rem; font-weight: 400; color: var(--text-muted);">(${grouped[reto].length} valoraciones)</span></td>`;
@@ -1733,10 +1699,9 @@
             });
         }
 
-        // Limpieza de datos selectiva para cada tabla
         function clearSectionData(section) {
             const label = section === 'incidencias' ? 'las incidencias' : 'las valoraciones de aprendizaje';
-            if (confirm(`¿Deseas vaciar el registro local de ${label}? Esta acción es irreversible para la consola de administrador local.`)) {
+            if (confirm(`¿Deseas vaciar el registro local de ${label}?`)) {
                 if (section === 'incidencias') {
                     submissionsLocal = submissionsLocal.filter(item => item.type !== 'incidencia');
                 } else {
@@ -1748,121 +1713,71 @@
             }
         }
 
-        // --- EXPORTACIÓN DE DATA ---
-
         function exportSectionCSV(section) {
             const dataToExport = submissionsLocal.filter(item => item.type === (section === 'incidencias' ? 'incidencia' : 'valoracion'));
-
             if (dataToExport.length === 0) {
                 showToast('No hay datos disponibles en esta sección para exportar.', 'error');
                 return;
             }
-
-            let csvContent = '\uFEFF'; // Byte order mark para compatibilidad de acentos con Excel en español
-
+            let csvContent = '\uFEFF';
             if (section === 'incidencias') {
                 const headers = ['Hora', 'Grupo', 'Reto', 'Nivel Urgencia', 'Descripción del bloqueo'];
                 csvContent += headers.map(h => `"${h}"`).join(';') + '\n';
                 dataToExport.forEach(item => {
-                    const row = [
-                        item.timestamp,
-                        item.numeroGrupo,
-                        item.numeroReto,
-                        item.urgenciaIncidencia,
-                        item.explicacionIncidencia ? item.explicacionIncidencia.replace(/"/g, '""') : ''
-                    ];
-                    csvContent += row.map(val => `"${val}"`).join(';') + '\n';
+                    csvContent += `"${item.timestamp}";"${item.numeroGrupo}";"${item.numeroReto}";"${item.urgenciaIncidencia}";"${item.explicacionIncidencia ? item.explicacionIncidencia.replace(/"/g, '""') : ''}"\n`;
                 });
                 downloadBlob(csvContent, 'incidencias_recibidas.csv', 'text/csv;charset=utf-8;');
             } else {
                 const headers = ['Hora', 'Grupo', 'Reto', 'Dificultad', 'Logro', 'Aplicabilidad', 'Aprendizaje Adquirido', 'Dudas/Consultas'];
                 csvContent += headers.map(h => `"${h}"`).join(';') + '\n';
                 dataToExport.forEach(item => {
-                    const row = [
-                        item.timestamp,
-                        item.numeroGrupo,
-                        item.numeroReto,
-                        item.nivelDificultad,
-                        item.nivelLogro,
-                        item.nivelAplicabilidad,
-                        item.aprendizajeAdquirido ? item.aprendizajeAdquirido.replace(/"/g, '""') : '',
-                        item.dudas ? item.dudas.replace(/"/g, '""') : ''
-                    ];
-                    csvContent += row.map(val => `"${val}"`).join(';') + '\n';
+                    csvContent += `"${item.timestamp}";"${item.numeroGrupo}";"${item.numeroReto}";"${item.nivelDificultad}";"${item.nivelLogro}";"${item.nivelAplicabilidad}";"${item.aprendizajeAdquirido ? item.aprendizajeAdquirido.replace(/"/g, '""') : ''}";"${item.dudas ? item.dudas.replace(/"/g, '""') : ''}"\n`;
                 });
                 downloadBlob(csvContent, 'valoraciones_aprendizaje.csv', 'text/csv;charset=utf-8;');
             }
-
             showToast('Archivo de Excel (CSV) exportado correctamente.', 'success');
         }
 
         function exportSectionMarkdown(section) {
             const dataToExport = submissionsLocal.filter(item => item.type === (section === 'incidencias' ? 'incidencia' : 'valoracion'));
-
             if (dataToExport.length === 0) {
                 showToast('No hay datos disponibles en esta sección para exportar.', 'error');
                 return;
             }
-
             let md = '';
             const timestampStr = `${new Date().toLocaleDateString()} a las ${new Date().toLocaleTimeString()}`;
-
             if (section === 'incidencias') {
-                md += `# Registro de Incidencias de los Grupos - El Loco de la Mochila\n\n`;
-                md += `Informe generado el: ${timestampStr}\n\n`;
-
-                // Agrupamos por retos
+                md += `# Registro de Incidencias de los Grupos\n\nInforme generado el: ${timestampStr}\n\n`;
                 const grouped = {};
                 dataToExport.forEach(item => {
                     const k = `Reto ${item.numeroReto}`;
                     if (!grouped[k]) grouped[k] = [];
                     grouped[k].push(item);
                 });
-
-                const sorted = Object.keys(grouped).sort((a,b) => parseInt(a.replace('Reto ','')) - parseInt(b.replace('Reto ','')));
-
-                sorted.forEach(reto => {
-                    md += `## ${reto}\n\n`;
-                    md += `| Hora / Grupo | Nivel de Urgencia | Explicación del Bloqueo |\n`;
-                    md += `| :--- | :--- | :--- |\n`;
-                    grouped[reto].forEach(item => {
-                        md += `| **Grupo ${item.numeroGrupo}** <br> ${item.timestamp} | ${item.urgenciaIncidencia}/5 | ${item.explicacionIncidencia} |\n`;
-                    });
-                    md += `\n`;
+                Object.keys(grouped).forEach(reto => {
+                    md += `## ${reto}\n\n| Hora / Grupo | Nivel de Urgencia | Explicación del Bloqueo |\n| :--- | :--- | :--- |\n`;
+                    grouped[reto].forEach(item => { md += `| **Grupo ${item.numeroGrupo}** <br> ${item.timestamp} | ${item.urgenciaIncidencia}/5 | ${item.explicacionIncidencia} |\n`; });
                 });
                 downloadBlob(md, 'informe_incidencias.md', 'text/markdown;charset=utf-8;');
             } else {
-                md += `# Registro de Valoraciones del Aprendizaje - El Loco de la Mochila\n\n`;
-                md += `Informe generado el: ${timestampStr}\n\n`;
-
-                // Agrupamos por retos
+                md += `# Registro de Valoraciones del Aprendizaje\n\nInforme generado el: ${timestampStr}\n\n`;
                 const grouped = {};
                 dataToExport.forEach(item => {
                     const k = `Reto ${item.numeroReto}`;
                     if (!grouped[k]) grouped[k] = [];
                     grouped[k].push(item);
                 });
-
-                const sorted = Object.keys(grouped).sort((a,b) => parseInt(a.replace('Reto ','')) - parseInt(b.replace('Reto ','')));
-
-                sorted.forEach(reto => {
-                    md += `## ${reto}\n\n`;
-                    md += `| Hora / Grupo | Métricas | Aprendizaje / Dudas |\n`;
-                    md += `| :--- | :--- | :--- |\n`;
+                Object.keys(grouped).forEach(reto => {
+                    md += `## ${reto}\n\n| Hora / Grupo | Métricas | Aprendizaje / Dudas |\n| :--- | :--- | :--- |\n`;
                     grouped[reto].forEach(item => {
-                        const metricas = `Dificultad: **${item.nivelDificultad}/5** <br> Logro: **${item.nivelLogro}/5** <br> Aplicabilidad: **${item.nivelAplicabilidad}/5**`;
-                        const respuestas = `**Aprendizaje:** ${item.aprendizajeAdquirido} ${item.dudas ? `<br>**Dudas:** _${item.dudas}_` : ''}`;
-                        md += `| **Grupo ${item.numeroGrupo}** <br> ${item.timestamp} | ${metricas} | ${respuestas} |\n`;
+                        md += `| **Grupo ${item.numeroGrupo}** <br> ${item.timestamp} | Dificultad: ${item.nivelDificultad}/5 <br> Logro: ${item.nivelLogro}/5 | **Aprendizaje:** ${item.aprendizajeAdquirido} |\n`;
                     });
-                    md += `\n`;
                 });
                 downloadBlob(md, 'informe_valoraciones.md', 'text/markdown;charset=utf-8;');
             }
-
             showToast('Informe estructurado en Markdown descargado.', 'success');
         }
 
-        // Helper para descargar archivos generados por JS
         function downloadBlob(content, filename, contentType) {
             const blob = new Blob([content], { type: contentType });
             const url = URL.createObjectURL(blob);
@@ -1875,118 +1790,63 @@
             URL.revokeObjectURL(url);
         }
 
-        // Toasts dinámicos
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            
             let icon = '<i class="fa-solid fa-circle-info" style="color: var(--primary);"></i>';
-            if (type === 'success') {
-                icon = '<i class="fa-solid fa-circle-check" style="color: var(--success);"></i>';
-            } else if (type === 'error') {
-                icon = '<i class="fa-solid fa-circle-xmark" style="color: var(--danger);"></i>';
-            } else if (type === 'warning') {
-                icon = '<i class="fa-solid fa-triangle-exclamation" style="color: var(--warning);"></i>';
-            }
+            if (type === 'success') icon = '<i class="fa-solid fa-circle-check" style="color: var(--success);"></i>';
+            else if (type === 'error') icon = '<i class="fa-solid fa-circle-xmark" style="color: var(--danger);"></i>';
+            else if (type === 'warning') icon = '<i class="fa-solid fa-triangle-exclamation" style="color: var(--warning);"></i>';
 
             toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <div style="font-size: 1.25rem; display: flex; align-items: center;">${icon}</div>
-                <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-main);">${message}</div>
-            `;
-
+            toast.innerHTML = `<div style="font-size: 1.25rem; display: flex; align-items: center;">${icon}</div><div style="font-size: 0.8rem; font-weight: 600; color: var(--text-main);">${message}</div>`;
             container.appendChild(toast);
-
-            // Desvanecer y retirar automáticamente
             setTimeout(() => {
                 toast.style.opacity = '0';
                 toast.style.transform = 'translateY(15px)';
-                setTimeout(() => {
-                    toast.remove();
-                }, 300);
+                setTimeout(() => { toast.remove(); }, 300);
             }, 4500);
         }
-        // Función para descargar los datos reales desde Google Sheets
-function cargarDatosDesdeGoogle() {
-    // Solo hacemos la consulta si estamos visualizando la pantalla de Administrador
-    const viewAdmin = document.getElementById('view-admin');
-    if (viewAdmin && viewAdmin.classList.contains('hidden')) return;
 
-    // "targetUrl" debe ser la misma URL de tu Apps Script terminada en /exec
-    // IMPORTANTE: Asegúrate de que coincida con la URL que pusiste en sendSubmission
-    const targetUrl = "https://script.google.com/macros/s/AKfycbxN0tqCy3FIo10SfZAvtrIfp418uC1Snje0r3IL3tT_aQRJfQ5VnZo07wMt7voi-DKG4g/exec"; 
-
-    if (!targetUrl || targetUrl.trim() === '') return;
-
-    fetch(targetUrl)
-        .then(response => response.json())
-        .then(data => {
-            // Combinamos las incidencias/finalizaciones y las valoraciones en la lista local de la pantalla
-            const nuevasSubmissions = [];
-            
-            if (data.incidencias) {
-                // Las ordenamos al revés para que las más nuevas aparezcan arriba
-                data.incidencias.reverse().forEach(item => nuevasSubmissions.push(item));
-            }
-            if (data.valoraciones) {
-                data.valoraciones.reverse().forEach(item => nuevasSubmissions.push(item));
-            }
-
-            // Si hay datos nuevos en Google Sheets, actualizamos la pantalla del administrador
-            if (nuevasSubmissions.length > 0) {
-                submissionsLocal = nuevasSubmissions;
-                renderAdminViews();
-            }
-        })
-        .catch(err => console.error("Error sincronizando el panel de administrador con Google Sheets:", err));
-}
-
-// Activar una consulta automática a Google Sheets cada 5 segundos (5000 milisegundos)
-setInterval(cargarDatosDesdeGoogle, 5000);
-    // Función para descargar los datos reales desde Google Sheets de forma segura
+        // ====================================================================
+        // FUNCIÓN DE SINCRONIZACIÓN CON GOOGLE SHEETS EN TIEMPO REAL
+        // ====================================================================
         function cargarDatosDesdeGoogle() {
-            // Solo busca datos si el panel de Administrador está visible en la pantalla
             const viewAdmin = document.getElementById('view-admin');
             if (viewAdmin && viewAdmin.classList.contains('hidden')) return;
 
-            // PON AQUÍ TU URL DE GOOGLE APPS SCRIPT TERMINADA EN /exec
-            const targetUrl = "https://script.google.com/macros/s/AKfycbxN0tqCy3FIo10SfZAvtrIfp418uC1Snje0r3IL3tT_aQRJfQ5VnZo07wMt7voi-DKG4g/exec"; 
+            const targetUrl = "TU_URL_DE_APPS_SCRIPT_AQUI"; 
 
             if (!targetUrl || targetUrl.trim() === '') return;
 
             fetch(targetUrl)
                 .then(response => {
-                    if (!response.ok) throw new Error("Error en la respuesta de la red");
+                    if (!response.ok) throw new Error("Error de red");
                     return response.json();
                 })
                 .then(data => {
-                    if (data.error) {
-                        console.error("Error devuelto por Google:", data.error);
-                        return;
-                    }
+                    if (data.error) return;
 
                     const nuevasSubmissions = [];
                     
-                    // Procesamos incidencias (las más nuevas primero)
                     if (data.incidencias && Array.isArray(data.incidencias)) {
                         data.incidencias.reverse().forEach(item => nuevasSubmissions.push(item));
                     }
-                    // Procesamos valoraciones (las más nuevas primero)
                     if (data.valoraciones && Array.isArray(data.valoraciones)) {
                         data.valoraciones.reverse().forEach(item => nuevasSubmissions.push(item));
                     }
 
-                    // Si ha encontrado registros en tu Google Sheets, actualiza la pantalla del panel
                     if (nuevasSubmissions.length > 0) {
                         submissionsLocal = nuevasSubmissions;
                         renderAdminViews();
                     }
                 })
-                .catch(err => console.error("Error sincronizando el panel de administrador con Google Sheets:", err));
+                .catch(err => console.error("Error sincronizando administrador:", err));
         }
 
-        // Ejecutar la consulta automática a Google Sheets cada 5 segundos (5000 milisegundos)
+        // Ejecutar la consulta automática a Google Sheets cada 5 segundos
         setInterval(cargarDatosDesdeGoogle, 5000);
+
     </script>
 </body>
 </html>
