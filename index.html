@@ -1943,6 +1943,50 @@ function cargarDatosDesdeGoogle() {
 
 // Activar una consulta automática a Google Sheets cada 5 segundos (5000 milisegundos)
 setInterval(cargarDatosDesdeGoogle, 5000);
+    // Función para descargar los datos reales desde Google Sheets de forma segura
+        function cargarDatosDesdeGoogle() {
+            // Solo busca datos si el panel de Administrador está visible en la pantalla
+            const viewAdmin = document.getElementById('view-admin');
+            if (viewAdmin && viewAdmin.classList.contains('hidden')) return;
+
+            // PON AQUÍ TU URL DE GOOGLE APPS SCRIPT TERMINADA EN /exec
+            const targetUrl = "https://script.google.com/macros/s/AKfycbxN0tqCy3FIo10SfZAvtrIfp418uC1Snje0r3IL3tT_aQRJfQ5VnZo07wMt7voi-DKG4g/exec"; 
+
+            if (!targetUrl || targetUrl.trim() === '') return;
+
+            fetch(targetUrl)
+                .then(response => {
+                    if (!response.ok) throw new Error("Error en la respuesta de la red");
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        console.error("Error devuelto por Google:", data.error);
+                        return;
+                    }
+
+                    const nuevasSubmissions = [];
+                    
+                    // Procesamos incidencias (las más nuevas primero)
+                    if (data.incidencias && Array.isArray(data.incidencias)) {
+                        data.incidencias.reverse().forEach(item => nuevasSubmissions.push(item));
+                    }
+                    // Procesamos valoraciones (las más nuevas primero)
+                    if (data.valoraciones && Array.isArray(data.valoraciones)) {
+                        data.valoraciones.reverse().forEach(item => nuevasSubmissions.push(item));
+                    }
+
+                    // Si ha encontrado registros en tu Google Sheets, actualiza la pantalla del panel
+                    if (nuevasSubmissions.length > 0) {
+                        submissionsLocal = nuevasSubmissions;
+                        renderAdminViews();
+                    }
+                })
+                .catch(err => console.error("Error sincronizando el panel de administrador con Google Sheets:", err));
+        }
+
+        // Ejecutar la consulta automática a Google Sheets cada 5 segundos (5000 milisegundos)
+        setInterval(cargarDatosDesdeGoogle, 5000);
     </script>
 </body>
 </html>
