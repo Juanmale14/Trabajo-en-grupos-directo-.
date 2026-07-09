@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seguimiento de los Grupos de Trabajo</title>
+    <!-- FontAwesome para los iconos de estrellas, grupos, retos y configuraciones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Fuente Inter para legibilidad premium -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
@@ -373,7 +375,7 @@
             border-style: solid;
         }
 
-        /* MODAL DE INSTRUCCIONES */
+        /* MODAL DE INSTRUCCIONES Y CLAVE */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -595,6 +597,7 @@
 </head>
 <body>
 
+    <!-- Encabezado y Selector de Roles -->
     <header>
         <div class="header-container">
             <div class="logo-section">
@@ -618,11 +621,17 @@
         </div>
     </header>
 
+    <!-- Contenedor Principal -->
     <main>
+        <!-- Toast Notification Container -->
         <div id="toast-container"></div>
 
+        <!-- ========================================== -->
+        <!-- VISTA DE USUARIO -->
+        <!-- ========================================== -->
         <section id="view-user" class="view-section">
             
+            <!-- Bienvenida y botón instrucciones -->
             <div class="card welcome-box">
                 <div class="welcome-text">
                     <h2>¡Estamos trabajando en equipo!</h2>
@@ -633,6 +642,7 @@
                 </button>
             </div>
 
+            <!-- APARTADO 1: DATOS -->
             <div class="card">
                 <div class="section-header">
                     <div class="section-title">
@@ -647,7 +657,8 @@
                             <i class="fa-solid fa-people-group"></i> Número de Grupo:
                         </label>
                         <select id="select-grupo">
-                            </select>
+                            <!-- Rellenado dinámicamente -->
+                        </select>
                     </div>
 
                     <div class="form-group">
@@ -655,13 +666,15 @@
                             <i class="fa-solid fa-trophy"></i> Número de Reto:
                         </label>
                         <select id="select-reto" disabled>
-                            </select>
+                            <!-- Rellenado dinámicamente y bloqueado con el Reto Actual de Admin -->
+                        </select>
                     </div>
                 </div>
             </div>
 
             <div class="flex-container">
                 
+                <!-- APARTADO 2: INCIDENCIAS -->
                 <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
                         <div class="section-header">
@@ -692,6 +705,7 @@
                             <i class="fa-solid fa-paper-plane"></i> Enviar Incidencia Directa
                         </button>
                         
+                        <!-- BOTÓN ¡RETO COMPLETADO! -->
                         <div style="border-top: 1px solid var(--border-color); padding-top: 1rem;">
                             <button type="button" onclick="submitFinalizacion()" class="btn-complete">
                                 <i class="fa-solid fa-flag-checkered"></i> ¡Reto Completado!
@@ -703,6 +717,7 @@
                     </div>
                 </div>
 
+                <!-- APARTADO 3: VALORACIÓN -->
                 <div class="card" id="seccion-valoracion" style="display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
                         <div class="section-header">
@@ -760,11 +775,16 @@
             </div>
         </section>
 
+        <!-- ========================================== -->
+        <!-- VISTA DE ADMINISTRADOR -->
+        <!-- ========================================== -->
         <section id="view-admin" class="view-section hidden">
             <div class="admin-layout">
                 
+                <!-- COLUMNA IZQUIERDA: CONFIGURACIÓN Y PANEL DE FINALES -->
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     
+                    <!-- Configuración General -->
                     <div class="card" style="margin-bottom: 0;">
                         <div class="section-header">
                             <div class="section-title">
@@ -773,22 +793,26 @@
                         </div>
 
                         <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                            <!-- Reto Activo Sincronizado -->
                             <div class="form-group">
                                 <label for="select-reto-actual" style="color: var(--primary);">
                                     <i class="fa-solid fa-bullseye"></i> Reto Actual Sincronizado:
                                 </label>
                                 <select id="select-reto-actual" onchange="changeRetoActual()" style="border-color: var(--primary); font-weight: 700;">
-                                    </select>
+                                    <!-- Rellenado dinámicamente del 1 al 20 -->
+                                </select>
                                 <p style="font-size: 0.7rem; color: var(--text-muted);">
                                     Esto fuerza de forma remota el reto que visualizan los usuarios en sus pantallas.
                                 </p>
                             </div>
 
+                            <!-- URL Google Apps Script -->
                             <div class="form-group">
                                 <label for="input-api-url">Apps Script Web App URL:</label>
                                 <input type="url" id="input-api-url" oninput="saveConfig()" placeholder="https://script.google.com/macros/s/.../exec">
                             </div>
 
+                            <!-- Límites máximos de Grupos -->
                             <div class="form-group">
                                 <label for="input-max-grupos">Nº Grupos Máx:</label>
                                 <input type="number" id="input-max-grupos" min="1" max="100" onchange="updateLimits()">
@@ -796,6 +820,40 @@
                         </div>
                     </div>
 
+                    <!-- Módulo de Compartir y Código QR -->
+                    <div class="card" style="margin-bottom: 0;">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <h3><i class="fa-solid fa-share-nodes" style="color: var(--primary);"></i> Compartir</h3>
+                            </div>
+                        </div>
+                        <p class="text-muted" style="font-size: 0.75rem; margin-bottom: 1rem;">
+                            Genera el enlace del participante para distribuirlo o proyectar el QR.
+                        </p>
+
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div class="form-group">
+                                <label for="share-url-input">URL de la aplicación:</label>
+                                <input type="text" id="share-url-input" placeholder="https://..." style="font-size: 0.85rem;">
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button onclick="copyShareUrl()" class="btn btn-outline" style="flex: 1; justify-content: center; height: 38px;">
+                                    <i class="fa-solid fa-copy"></i> Copiar
+                                </button>
+                                <button onclick="generateQRCode()" class="btn btn-green" style="flex: 1; font-size: 0.85rem; padding: 0.5rem; justify-content: center;">
+                                    <i class="fa-solid fa-qrcode"></i> Crear QR
+                                </button>
+                            </div>
+                            
+                            <!-- Visualizador de QR -->
+                            <div id="qr-container" class="text-center hidden" style="margin-top: 0.5rem; background: var(--bg-main); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                                <img id="qr-image" src="" alt="Código QR para participantes" style="max-width: 140px; height: auto; display: block; margin: 0 auto; border: 1px solid var(--border-color); background: white; padding: 5px; border-radius: 6px;">
+                                <p style="font-size: 0.65rem; color: var(--text-muted); margin-top: 0.5rem;">Escanear para acceder directamente al panel de usuario.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cuadro de Finalizaciones -->
                     <div class="card" style="margin-bottom: 0;">
                         <div class="section-header">
                             <div class="section-title">
@@ -808,22 +866,25 @@
                         </p>
                         
                         <div class="completions-list" id="completions-list-container">
+                            <!-- Se renderiza dinámicamente -->
                             <p class="text-center text-muted" style="font-size: 0.75rem; padding: 1rem 0;">Aún ningún grupo ha terminado.</p>
                         </div>
                     </div>
 
                 </div>
 
+                <!-- COLUMNA DERECHA: SECCIONES DE RECEPCIÓN SEPARADAS -->
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
                     
+                    <!-- SECCIÓN 1: INCIDENCIAS EXCLUSIVAMENTE (Agrupado por Retos) -->
                     <div class="card">
                         <div class="section-header" style="flex-wrap: wrap; gap: 0.75rem;">
                             <div class="section-title">
                                 <span class="section-badge badge-red" style="display: flex; align-items: center; gap: 0.25rem;">
-                                    <span style="width: 8px; height: 8px; background-color: var(--danger); border-radius: 50%; display: inline-block;"></span>
+                                    <span style="width: 8px; height: 8px; background-color: var(--danger); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite;"></span>
                                     En Vivo
                                 </span>
-                                <h3 style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Recepción de Incidencias</h3>
+                                <h3 style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Recepción de Incidencias (Solo Avisos)</h3>
                             </div>
                             
                             <div class="admin-controls">
@@ -839,10 +900,12 @@
                             </div>
                         </div>
 
+                        <!-- Filtro de Incidencias -->
                         <div class="filters-grid" style="grid-template-columns: 1fr;">
                             <input type="text" id="incidencias-search" oninput="renderIncidenciasTable()" placeholder="Buscar por número de grupo o descripción del problema...">
                         </div>
 
+                        <!-- Tabla de Incidencias -->
                         <div class="table-responsive">
                             <table id="incidencias-table">
                                 <thead>
@@ -853,11 +916,13 @@
                                     </tr>
                                 </thead>
                                 <tbody id="incidencias-table-body">
-                                    </tbody>
+                                    <!-- Dinámico -->
+                                </tbody>
                             </table>
                         </div>
                     </div>
 
+                    <!-- SECCIÓN 2: VALORACIONES DEL APRENDIZAJE EXCLUSIVAMENTE (Agrupado por Retos) -->
                     <div class="card">
                         <div class="section-header" style="flex-wrap: wrap; gap: 0.75rem;">
                             <div class="section-title">
@@ -865,7 +930,7 @@
                                     <span style="width: 8px; height: 8px; background-color: var(--success); border-radius: 50%; display: inline-block;"></span>
                                     Recibidas
                                 </span>
-                                <h3 style="color: var(--success);"><i class="fa-solid fa-graduation-cap"></i> Valoración del Aprendizaje</h3>
+                                <h3 style="color: var(--success);"><i class="fa-solid fa-graduation-cap"></i> Valoración del Aprendizaje (Solo Evaluaciones)</h3>
                             </div>
                             
                             <div class="admin-controls">
@@ -881,10 +946,12 @@
                             </div>
                         </div>
 
+                        <!-- Filtro de Valoraciones -->
                         <div class="filters-grid" style="grid-template-columns: 1fr;">
                             <input type="text" id="valoraciones-search" oninput="renderValoracionesTable()" placeholder="Buscar por grupo o textos de aprendizaje...">
                         </div>
 
+                        <!-- Tabla de Valoraciones -->
                         <div class="table-responsive">
                             <table id="valoraciones-table">
                                 <thead>
@@ -895,16 +962,19 @@
                                     </tr>
                                 </thead>
                                 <tbody id="valoraciones-table-body">
-                                    </tbody>
+                                    <!-- Dinámico -->
+                                </tbody>
                             </table>
                         </div>
                     </div>
 
                 </div>
+
             </div>
         </section>
     </main>
 
+    <!-- Modal de instrucciones -->
     <div id="instructions-modal" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
@@ -949,20 +1019,39 @@
         </div>
     </div>
 
+    <!-- Modal de Acceso de Seguridad (Administrador) -->
+    <div id="password-modal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 360px;">
+            <div class="modal-header" style="background-color: var(--danger);">
+                <h3 style="font-weight: 800; font-size: 1.1rem;"><i class="fa-solid fa-lock"></i> Acceso Administrador</h3>
+                <button class="modal-close" onclick="closePasswordModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="admin-password">Introduce la contraseña de seguridad:</label>
+                    <input type="password" id="admin-password" placeholder="••••" style="text-align: center; font-size: 1.5rem; letter-spacing: 0.2em; font-weight: 700;">
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button onclick="closePasswordModal()" class="btn btn-outline" style="flex: 1; justify-content: center;">Cancelar</button>
+                    <button onclick="verifyPassword()" class="btn btn-red" style="flex: 1; justify-content: center;">Acceder</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
     <footer>
         <p>Herramienta para el Seguimiento de Grupos creada en 2026 por <a href="https://blogsaverroes.juntadeandalucia.es/ellocodelamochila/" target="_blank">El loco de la mochila</a>. Todos los derechos reservados.</p>
     </footer>
 
+    <!-- LÓGICA DE JAVASCRIPT -->
     <script>
-        // =========================================================================
-        // ⚠️ PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT (LA QUE TERMINA EN /exec)
-        // =========================================================================
-        const URL_FIJA_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxN0tqCy3FIo10SfZAvtrIfp418uC1Snje0r3IL3tT_aQRJfQ5VnZo07wMt7voi-DKG4g/exec"; 
-
-        // CONFIGURACIÓN PERSISTENTE EN NAVEGADOR (localStorage)
+        // CONFIGURACIÓN PERSISTENTE EN NAVEGADOR SIN ENLACES PRECONFIGURADOS POR DEFECTO
         const CONFIG = {
-            get apiUrl() { return URL_FIJA_APPS_SCRIPT || localStorage.getItem('sg_api_url') || ''; },
-            set apiUrl(val) { if(!URL_FIJA_APPS_SCRIPT) localStorage.setItem('sg_api_url', val); },
+            get apiUrl() { 
+                return localStorage.getItem('sg_api_url') || ''; 
+            },
+            set apiUrl(val) { localStorage.setItem('sg_api_url', val); },
             
             get maxGrupos() { return parseInt(localStorage.getItem('sg_max_grupos')) || 30; },
             set maxGrupos(val) { localStorage.setItem('sg_max_grupos', val); },
@@ -971,6 +1060,7 @@
             set retoActual(val) { localStorage.setItem('sg_reto_actual', val); }
         };
 
+        // Estado local de las estrellas del formulario del alumno
         const USER_STATE = {
             urgencia: 0,
             dificultad: 0,
@@ -978,8 +1068,13 @@
             aplicabilidad: 0
         };
 
+        // Autenticación temporal del administrador para la sesión actual
+        let isAdminAuthenticated = false;
+
+        // Historial global de envíos (incidencias, valoraciones y finalizaciones)
         let submissionsLocal = JSON.parse(localStorage.getItem('sg_submissions_local_v2')) || [];
 
+        // Canal BroadcastChannel para emulación en tiempo real local sin base de datos
         const realTimeChannel = new BroadcastChannel('realtime_group_tracker_v2');
         realTimeChannel.onmessage = (event) => {
             if (event.data) {
@@ -1007,21 +1102,28 @@
         };
 
         window.onload = function() {
+            // Cargar límites y configuraciones en la vista de administración
             document.getElementById('input-api-url').value = CONFIG.apiUrl;
-            if(URL_FIJA_APPS_SCRIPT) {
-                document.getElementById('input-api-url').disabled = true;
-                document.getElementById('input-api-url').style.backgroundColor = '#f1f5f9';
-            }
             document.getElementById('input-max-grupos').value = CONFIG.maxGrupos;
 
+            // Rellenar selectores
             rebuildSelects();
             rebuildRetoActualAdmin();
 
+            // Sincronizar el reto actual configurado
             document.getElementById('select-reto-actual').value = CONFIG.retoActual;
             document.getElementById('select-reto').value = CONFIG.retoActual;
 
+            // Rellenar automáticamente la dirección de compartir con la URL actual de ejecución
+            document.getElementById('share-url-input').value = window.location.href;
+
+            // Generar selectores de estrellas interactivos
             createStarRating('star-urgencia', 'label-urgencia', 'urgencia', [
-                'Urgencia Leve (Informativo)', 'Moderada (Dificulta el ritmo)', 'Importante (Ralentización del equipo)', 'Alta Urgencia (Estamos bloqueados)', 'Crítica (Necesitamos intervención ya)'
+                'Urgencia Leve (Informativo)', 
+                'Moderada (Dificulta el ritmo)', 
+                'Importante (Ralentización del equipo)', 
+                'Alta Urgencia (Estamos bloqueados)', 
+                'Crítica (Necesitamos intervención ya)'
             ]);
             createStarRating('star-dificultad', 'label-dificultad', 'dificultad', [
                 'Muy Fácil', 'Fácil / Sencillo', 'Dificultad Media', 'Bastante difícil', 'Complejidad Extrema'
@@ -1033,22 +1135,65 @@
                 'No aplicable', 'Apenas aplicable', 'Moderadamente útil', 'Muy aplicable', 'Esencial / Práctica prioritaria'
             ]);
 
+            // Vincular evento "Enter" para el campo de contraseña
+            document.getElementById('admin-password').addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    verifyPassword();
+                }
+            });
+
             renderAdminViews();
         };
 
+        // Modal de instrucciones
         function toggleModal(show) {
             const modal = document.getElementById('instructions-modal');
             modal.style.display = show ? 'flex' : 'none';
         }
 
+        // --- SISTEMA DE CONTROL DE ACCESO (ADMINISTRADOR) ---
+
+        // Abrir y cerrar el modal de contraseña
+        function openPasswordModal() {
+            document.getElementById('password-modal').style.display = 'flex';
+            document.getElementById('admin-password').value = '';
+            document.getElementById('admin-password').focus();
+        }
+
+        function closePasswordModal() {
+            document.getElementById('password-modal').style.display = 'none';
+            // Restaurar pestaña activa al rol de usuario
+            switchRole('user');
+        }
+
+        // Verificar la clave de administración
+        function verifyPassword() {
+            const pwdInput = document.getElementById('admin-password');
+            if (pwdInput.value === '1414') {
+                isAdminAuthenticated = true;
+                document.getElementById('password-modal').style.display = 'none';
+                
+                // Efectuar el cambio de pestaña ahora que está autorizado
+                executeRoleSwitch('admin');
+                showToast('Acceso de administración desbloqueado.', 'success');
+            } else {
+                showToast('Contraseña incorrecta. Inténtalo de nuevo.', 'error');
+                pwdInput.value = '';
+                pwdInput.focus();
+            }
+        }
+
+        // Generador de listas desplegables
         function rebuildSelects() {
             const selectGrupo = document.getElementById('select-grupo');
             const selectReto = document.getElementById('select-reto');
+
             const valGrupo = selectGrupo.value;
 
             selectGrupo.innerHTML = '';
             selectReto.innerHTML = '';
 
+            // Rellenar grupos de 1 a maxGrupos
             for (let i = 1; i <= CONFIG.maxGrupos; i++) {
                 const opt = document.createElement('option');
                 opt.value = i;
@@ -1056,6 +1201,7 @@
                 selectGrupo.appendChild(opt);
             }
 
+            // Rellenar retos del 1 al 20 por defecto en usuario
             for (let i = 1; i <= 20; i++) {
                 const opt = document.createElement('option');
                 opt.value = i;
@@ -1068,6 +1214,7 @@
             }
         }
 
+        // Inicializar selector de retos de administración (1 al 20)
         function rebuildRetoActualAdmin() {
             const selectRetoActual = document.getElementById('select-reto-actual');
             selectRetoActual.innerHTML = '';
@@ -1079,11 +1226,15 @@
             }
         }
 
+        // Cambio del reto actual desde el administrador
         function changeRetoActual() {
             const nuevoReto = parseInt(document.getElementById('select-reto-actual').value);
             CONFIG.retoActual = nuevoReto;
+            
+            // Sincronizar selectores
             document.getElementById('select-reto').value = nuevoReto;
 
+            // Broadcast del nuevo reto
             realTimeChannel.postMessage({
                 type: 'SYNC_RETO_ACTUAL',
                 payload: nuevoReto
@@ -1092,6 +1243,7 @@
             showToast(`Reto actual fijado globalmente en el Reto ${nuevoReto}.`, 'warning');
         }
 
+        // Generador de sistemas de valoración con estrellas
         function createStarRating(containerId, labelId, stateField, textLabels) {
             const container = document.getElementById(containerId);
             const label = document.getElementById(labelId);
@@ -1103,9 +1255,11 @@
                 star.className = 'star-btn';
                 star.innerHTML = '<i class="fa-solid fa-star"></i>';
                 
+                // Eventos visuales hover
                 star.onmouseover = () => highlightStars(container, i);
                 star.onmouseout = () => highlightStars(container, USER_STATE[stateField]);
 
+                // Evento click de asignación definitiva
                 star.onclick = () => {
                     USER_STATE[stateField] = i;
                     highlightStars(container, i);
@@ -1128,7 +1282,22 @@
             });
         }
 
+        // Interceptador para el control de pestañas/roles
         function switchRole(role) {
+            if (role === 'admin') {
+                if (!isAdminAuthenticated) {
+                    // Bloquear pestaña y mostrar modal de seguridad para la contraseña 1414
+                    openPasswordModal();
+                } else {
+                    executeRoleSwitch('admin');
+                }
+            } else {
+                executeRoleSwitch('user');
+            }
+        }
+
+        // Ejecutar visualmente el cambio de pestaña autorizado
+        function executeRoleSwitch(role) {
             const viewUser = document.getElementById('view-user');
             const viewAdmin = document.getElementById('view-admin');
             const btnUser = document.getElementById('btn-role-user');
@@ -1148,10 +1317,9 @@
             }
         }
 
+        // Guardar configuración manual del admin
         function saveConfig() {
-            if(!URL_FIJA_APPS_SCRIPT) {
-                CONFIG.apiUrl = document.getElementById('input-api-url').value;
-            }
+            CONFIG.apiUrl = document.getElementById('input-api-url').value;
         }
 
         function updateLimits() {
@@ -1160,6 +1328,48 @@
             showToast('Límites de grupos actualizados.', 'success');
         }
 
+        // --- MÓDULO DE COMPARTIR Y QR ---
+
+        // Copiar el enlace al portapapeles (compatible con navegadores móviles e iframes)
+        function copyShareUrl() {
+            const shareUrlInput = document.getElementById('share-url-input');
+            shareUrlInput.select();
+            shareUrlInput.setSelectionRange(0, 99999); // Para móviles
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast('¡Enlace de participante copiado al portapapeles!', 'success');
+                } else {
+                    showToast('No se pudo copiar automáticamente. Copia el texto a mano.', 'error');
+                }
+            } catch (err) {
+                showToast('Error al copiar el enlace.', 'error');
+            }
+        }
+
+        // Generar un código QR en tiempo real
+        function generateQRCode() {
+            const urlInputVal = document.getElementById('share-url-input').value.trim();
+            const qrContainer = document.getElementById('qr-container');
+            const qrImage = document.getElementById('qr-image');
+
+            if (!urlInputVal) {
+                showToast('Introduce una URL válida en el cuadro de texto.', 'error');
+                return;
+            }
+
+            // Generar el código utilizando el API seguro qrserver
+            const apiEndpoint = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(urlInputVal)}`;
+            
+            qrImage.src = apiEndpoint;
+            qrContainer.classList.remove('hidden');
+            showToast('Código QR generado con éxito.', 'success');
+        }
+
+        // --- EMISIÓN DE DATOS DESDE EL USUARIO ---
+
+        // Envío de Incidencia
         function submitIncidencia() {
             const grupo = document.getElementById('select-grupo').value;
             const reto = document.getElementById('select-reto').value;
@@ -1185,6 +1395,7 @@
 
             sendSubmission(payload, 'Incidencia enviada al ponente de inmediato.');
 
+            // Limpiar formulario de incidencias
             document.getElementById('text-incidencia').value = '';
             USER_STATE.urgencia = 0;
             highlightStars(document.getElementById('star-urgencia'), 0);
@@ -1192,10 +1403,12 @@
             document.getElementById('label-urgencia').style.color = 'var(--text-muted)';
         }
 
+        // Envío de Finalización de Reto (Bandera)
         function submitFinalizacion() {
             const grupo = document.getElementById('select-grupo').value;
             const reto = document.getElementById('select-reto').value;
 
+            // Evitar duplicados consecutivos innecesarios de finalización del mismo grupo en el mismo reto
             const duplicado = submissionsLocal.some(item => 
                 item.type === 'finalizacion' && 
                 item.numeroGrupo === grupo && 
@@ -1217,6 +1430,8 @@
             };
 
             sendSubmission(payload, '¡Excelente! Aviso de reto finalizado enviado. Procede a valorar vuestro aprendizaje.');
+            
+            // Desplazar automáticamente hacia el bloque de autoevaluación pedagógica
             scrollToValoracion();
         }
 
@@ -1224,11 +1439,15 @@
             const section = document.getElementById('seccion-valoracion');
             if (section) {
                 section.scrollIntoView({ behavior: 'smooth' });
+                // Animamos levemente para captar la atención del alumno
                 section.style.outline = '3px solid var(--success)';
-                setTimeout(() => { section.style.outline = 'none'; }, 1500);
+                setTimeout(() => {
+                    section.style.outline = 'none';
+                }, 1500);
             }
         }
 
+        // Envío de Valoración de Aprendizaje
         function submitValoracion() {
             const grupo = document.getElementById('select-grupo').value;
             const reto = document.getElementById('select-reto').value;
@@ -1260,6 +1479,7 @@
 
             sendSubmission(payload, 'Valoración guardada y transmitida correctamente.');
 
+            // Limpiar formulario de valoración
             document.getElementById('text-aprendizaje').value = '';
             document.getElementById('text-dudas').value = '';
             USER_STATE.dificultad = 0;
@@ -1276,7 +1496,7 @@
             document.getElementById('label-aplicabilidad').style.color = 'var(--text-muted)';
         }
 
-        // Transmisión de datos corregida para Google Sheets por POST estructurado
+        // Transmisión de datos (Soporte local en vivo y Apps Script)
         function sendSubmission(payload, successMsg) {
             const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             
@@ -1286,22 +1506,24 @@
                 ...payload
             };
 
+            // 1. Almacenamiento local
             submissionsLocal.unshift(submission);
             localStorage.setItem('sg_submissions_local_v2', JSON.stringify(submissionsLocal));
 
+            // 2. Propagación para otras pestañas abiertas
             realTimeChannel.postMessage({
                 type: 'NEW_SUBMISSION',
                 payload: submission
             });
 
+            // 3. Envío físico real a Google Sheets vía webhook de Apps Script
             const targetUrl = CONFIG.apiUrl;
             if (targetUrl && targetUrl.trim() !== '') {
-                // Modificado para usar envío de formulario estándar compatible nativamente con Apps Script sin preflight CORS restrictivos
                 fetch(targetUrl, {
                     method: 'POST',
-                    mode: 'no-cors', 
+                    mode: 'no-cors',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
+                        'Content-Type': 'text/plain'
                     },
                     body: JSON.stringify(payload)
                 })
@@ -1319,15 +1541,21 @@
             renderAdminViews();
         }
 
+
+        // --- SECCIÓN DE ADMINISTRACIÓN ---
+
+        // Llamar a todos los renders de administración
         function renderAdminViews() {
             renderIncidenciasTable();
             renderValoracionesTable();
             renderCompletionsWidget();
         }
 
+        // Widget lateral: Grupos que han finalizado el reto activo
         function renderCompletionsWidget() {
             const listContainer = document.getElementById('completions-list-container');
             const countBadge = document.getElementById('completions-count');
+
             const currentRetoActive = CONFIG.retoActual;
 
             const completions = submissionsLocal.filter(item => 
@@ -1337,7 +1565,11 @@
             countBadge.textContent = completions.length;
 
             if (completions.length === 0) {
-                listContainer.innerHTML = `<p class="text-center text-muted" style="font-size: 0.75rem; padding: 1rem 0;">Ningún grupo ha finalizado el Reto ${currentRetoActive} aún.</p>`;
+                listContainer.innerHTML = `
+                    <p class="text-center text-muted" style="font-size: 0.75rem; padding: 1rem 0;">
+                        Ningún grupo ha finalizado el Reto ${currentRetoActive} aún.
+                    </p>
+                `;
                 return;
             }
 
@@ -1358,6 +1590,7 @@
             });
         }
 
+        // Tabla 1: Renderizar Incidencias (Agrupado por Retos)
         function renderIncidenciasTable() {
             const tbody = document.getElementById('incidencias-table-body');
             const searchVal = document.getElementById('incidencias-search').value.toLowerCase();
@@ -1369,14 +1602,22 @@
                     item.numeroGrupo.toString().includes(searchVal) ||
                     item.numeroReto.toString().includes(searchVal) ||
                     (item.explicacionIncidencia && item.explicacionIncidencia.toLowerCase().includes(searchVal));
+
                 return item.type === 'incidencia' && matchesSearch;
             });
 
             if (incidenciasData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="text-center" style="padding: 2.5rem; color: var(--text-muted);">No hay incidencias registradas.</td></tr>`;
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="text-center" style="padding: 2.5rem; color: var(--text-muted);">
+                            No hay incidencias registradas.
+                        </td>
+                    </tr>
+                `;
                 return;
             }
 
+            // Agrupar por reto
             const grouped = {};
             incidenciasData.forEach(item => {
                 const rKey = `Reto ${item.numeroReto}`;
@@ -1384,9 +1625,11 @@
                 grouped[rKey].push(item);
             });
 
+            // Orden descendente por retos
             const sortedKeys = Object.keys(grouped).sort((a, b) => parseInt(b.replace('Reto ', '')) - parseInt(a.replace('Reto ', '')));
 
             sortedKeys.forEach(reto => {
+                // Cabecera del reto
                 const hRow = document.createElement('tr');
                 hRow.className = 'group-header-row';
                 hRow.innerHTML = `<td colspan="3"><i class="fa-solid fa-trophy"></i> ${reto} <span style="font-size: 0.72rem; font-weight: 400; color: var(--text-muted);">(${grouped[reto].length} incidencias)</span></td>`;
@@ -1394,7 +1637,10 @@
 
                 grouped[reto].forEach(item => {
                     const tr = document.createElement('tr');
-                    const starsHtml = Array(5).fill(0).map((_, i) => `<i class="fa-solid fa-star ${i < item.urgenciaIncidencia ? 'star-active' : ''}"></i>`).join('');
+                    
+                    const starsHtml = Array(5).fill(0).map((_, i) => 
+                        `<i class="fa-solid fa-star ${i < item.urgenciaIncidencia ? 'star-active' : ''}"></i>`
+                    ).join('');
 
                     tr.innerHTML = `
                         <td style="font-weight: 700;">
@@ -1406,13 +1652,16 @@
                                 ${starsHtml} <span style="color: var(--text-muted); margin-left: 0.25rem;">(${item.urgenciaIncidencia}/5)</span>
                             </div>
                         </td>
-                        <td style="font-style: italic; color: #334155; font-weight: 500;">"${item.explicacionIncidencia}"</td>
+                        <td style="font-style: italic; color: #334155; font-weight: 500;">
+                            "${item.explicacionIncidencia}"
+                        </td>
                     `;
                     tbody.appendChild(tr);
                 });
             });
         }
 
+        // Tabla 2: Renderizar Valoraciones de Aprendizaje (Agrupado por Retos)
         function renderValoracionesTable() {
             const tbody = document.getElementById('valoraciones-table-body');
             const searchVal = document.getElementById('valoraciones-search').value.toLowerCase();
@@ -1425,14 +1674,22 @@
                     item.numeroReto.toString().includes(searchVal) ||
                     (item.aprendizajeAdquirido && item.aprendizajeAdquirido.toLowerCase().includes(searchVal)) ||
                     (item.dudas && item.dudas.toLowerCase().includes(searchVal));
+
                 return item.type === 'valoracion' && matchesSearch;
             });
 
             if (valoracionesData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="text-center" style="padding: 2.5rem; color: var(--text-muted);">No hay valoraciones de aprendizaje registradas.</td></tr>`;
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="text-center" style="padding: 2.5rem; color: var(--text-muted);">
+                            No hay valoraciones de aprendizaje registradas.
+                        </td>
+                    </tr>
+                `;
                 return;
             }
 
+            // Agrupar por reto
             const grouped = {};
             valoracionesData.forEach(item => {
                 const rKey = `Reto ${item.numeroReto}`;
@@ -1440,9 +1697,11 @@
                 grouped[rKey].push(item);
             });
 
+            // Orden descendente por retos
             const sortedKeys = Object.keys(grouped).sort((a, b) => parseInt(b.replace('Reto ', '')) - parseInt(a.replace('Reto ', '')));
 
             sortedKeys.forEach(reto => {
+                // Cabecera del reto
                 const hRow = document.createElement('tr');
                 hRow.className = 'group-header-row';
                 hRow.innerHTML = `<td colspan="3"><i class="fa-solid fa-trophy"></i> ${reto} <span style="font-size: 0.72rem; font-weight: 400; color: var(--text-muted);">(${grouped[reto].length} valoraciones)</span></td>`;
@@ -1474,6 +1733,7 @@
             });
         }
 
+        // Limpieza de datos selectiva para cada tabla
         function clearSectionData(section) {
             const label = section === 'incidencias' ? 'las incidencias' : 'las valoraciones de aprendizaje';
             if (confirm(`¿Deseas vaciar el registro local de ${label}? Esta acción es irreversible para la consola de administrador local.`)) {
@@ -1488,18 +1748,29 @@
             }
         }
 
+        // --- EXPORTACIÓN DE DATA ---
+
         function exportSectionCSV(section) {
             const dataToExport = submissionsLocal.filter(item => item.type === (section === 'incidencias' ? 'incidencia' : 'valoracion'));
+
             if (dataToExport.length === 0) {
                 showToast('No hay datos disponibles en esta sección para exportar.', 'error');
                 return;
             }
-            let csvContent = '\uFEFF';
+
+            let csvContent = '\uFEFF'; // Byte order mark para compatibilidad de acentos con Excel en español
+
             if (section === 'incidencias') {
                 const headers = ['Hora', 'Grupo', 'Reto', 'Nivel Urgencia', 'Descripción del bloqueo'];
                 csvContent += headers.map(h => `"${h}"`).join(';') + '\n';
                 dataToExport.forEach(item => {
-                    const row = [item.timestamp, item.numeroGrupo, item.numeroReto, item.urgenciaIncidencia, item.explicacionIncidencia ? item.explicacionIncidencia.replace(/"/g, '""') : ''];
+                    const row = [
+                        item.timestamp,
+                        item.numeroGrupo,
+                        item.numeroReto,
+                        item.urgenciaIncidencia,
+                        item.explicacionIncidencia ? item.explicacionIncidencia.replace(/"/g, '""') : ''
+                    ];
                     csvContent += row.map(val => `"${val}"`).join(';') + '\n';
                 });
                 downloadBlob(csvContent, 'incidencias_recibidas.csv', 'text/csv;charset=utf-8;');
@@ -1507,49 +1778,77 @@
                 const headers = ['Hora', 'Grupo', 'Reto', 'Dificultad', 'Logro', 'Aplicabilidad', 'Aprendizaje Adquirido', 'Dudas/Consultas'];
                 csvContent += headers.map(h => `"${h}"`).join(';') + '\n';
                 dataToExport.forEach(item => {
-                    const row = [item.timestamp, item.numeroGrupo, item.numeroReto, item.nivelDificultad, item.nivelLogro, item.nivelAplicabilidad, item.aprendizajeAdquirido ? item.aprendizajeAdquirido.replace(/"/g, '""') : '', item.dudas ? item.dudas.replace(/"/g, '""') : ''];
+                    const row = [
+                        item.timestamp,
+                        item.numeroGrupo,
+                        item.numeroReto,
+                        item.nivelDificultad,
+                        item.nivelLogro,
+                        item.nivelAplicabilidad,
+                        item.aprendizajeAdquirido ? item.aprendizajeAdquirido.replace(/"/g, '""') : '',
+                        item.dudas ? item.dudas.replace(/"/g, '""') : ''
+                    ];
                     csvContent += row.map(val => `"${val}"`).join(';') + '\n';
                 });
                 downloadBlob(csvContent, 'valoraciones_aprendizaje.csv', 'text/csv;charset=utf-8;');
             }
+
             showToast('Archivo de Excel (CSV) exportado correctamente.', 'success');
         }
 
         function exportSectionMarkdown(section) {
             const dataToExport = submissionsLocal.filter(item => item.type === (section === 'incidencias' ? 'incidencia' : 'valoracion'));
+
             if (dataToExport.length === 0) {
                 showToast('No hay datos disponibles en esta sección para exportar.', 'error');
                 return;
             }
+
             let md = '';
             const timestampStr = `${new Date().toLocaleDateString()} a las ${new Date().toLocaleTimeString()}`;
 
             if (section === 'incidencias') {
-                md += `# Registro de Incidencias de los Grupos\n\nInforme generado el: ${timestampStr}\n\n`;
+                md += `# Registro de Incidencias de los Grupos - El Loco de la Mochila\n\n`;
+                md += `Informe generado el: ${timestampStr}\n\n`;
+
+                // Agrupamos por retos
                 const grouped = {};
                 dataToExport.forEach(item => {
                     const k = `Reto ${item.numeroReto}`;
                     if (!grouped[k]) grouped[k] = [];
                     grouped[k].push(item);
                 });
+
                 const sorted = Object.keys(grouped).sort((a,b) => parseInt(a.replace('Reto ','')) - parseInt(b.replace('Reto ','')));
+
                 sorted.forEach(reto => {
-                    md += `## ${reto}\n\n| Hora / Grupo | Nivel de Urgencia | Explicación del Bloqueo |\n| :--- | :--- | :--- |\n`;
-                    grouped[reto].forEach(item => { md += `| **Grupo ${item.numeroGrupo}** <br> ${item.timestamp} | ${item.urgenciaIncidencia}/5 | ${item.explicacionIncidencia} |\n`; });
+                    md += `## ${reto}\n\n`;
+                    md += `| Hora / Grupo | Nivel de Urgencia | Explicación del Bloqueo |\n`;
+                    md += `| :--- | :--- | :--- |\n`;
+                    grouped[reto].forEach(item => {
+                        md += `| **Grupo ${item.numeroGrupo}** <br> ${item.timestamp} | ${item.urgenciaIncidencia}/5 | ${item.explicacionIncidencia} |\n`;
+                    });
                     md += `\n`;
                 });
                 downloadBlob(md, 'informe_incidencias.md', 'text/markdown;charset=utf-8;');
             } else {
-                md += `# Registro de Valoraciones del Aprendizaje\n\nInforme generado el: ${timestampStr}\n\n`;
+                md += `# Registro de Valoraciones del Aprendizaje - El Loco de la Mochila\n\n`;
+                md += `Informe generado el: ${timestampStr}\n\n`;
+
+                // Agrupamos por retos
                 const grouped = {};
                 dataToExport.forEach(item => {
                     const k = `Reto ${item.numeroReto}`;
                     if (!grouped[k]) grouped[k] = [];
                     grouped[k].push(item);
                 });
+
                 const sorted = Object.keys(grouped).sort((a,b) => parseInt(a.replace('Reto ','')) - parseInt(b.replace('Reto ','')));
+
                 sorted.forEach(reto => {
-                    md += `## ${reto}\n\n| Hora / Grupo | Métricas | Aprendizaje / Dudas |\n| :--- | :--- | :--- |\n`;
+                    md += `## ${reto}\n\n`;
+                    md += `| Hora / Grupo | Métricas | Aprendizaje / Dudas |\n`;
+                    md += `| :--- | :--- | :--- |\n`;
                     grouped[reto].forEach(item => {
                         const metricas = `Dificultad: **${item.nivelDificultad}/5** <br> Logro: **${item.nivelLogro}/5** <br> Aplicabilidad: **${item.nivelAplicabilidad}/5**`;
                         const respuestas = `**Aprendizaje:** ${item.aprendizajeAdquirido} ${item.dudas ? `<br>**Dudas:** _${item.dudas}_` : ''}`;
@@ -1559,9 +1858,11 @@
                 });
                 downloadBlob(md, 'informe_valoraciones.md', 'text/markdown;charset=utf-8;');
             }
+
             showToast('Informe estructurado en Markdown descargado.', 'success');
         }
 
+        // Helper para descargar archivos generados por JS
         function downloadBlob(content, filename, contentType) {
             const blob = new Blob([content], { type: contentType });
             const url = URL.createObjectURL(blob);
@@ -1574,22 +1875,35 @@
             URL.revokeObjectURL(url);
         }
 
+        // Toasts dinámicos
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
+            
             let icon = '<i class="fa-solid fa-circle-info" style="color: var(--primary);"></i>';
-            if (type === 'success') icon = '<i class="fa-solid fa-circle-check" style="color: var(--success);"></i>';
-            else if (type === 'error') icon = '<i class="fa-solid fa-circle-xmark" style="color: var(--danger);"></i>';
-            else if (type === 'warning') icon = '<i class="fa-solid fa-triangle-exclamation" style="color: var(--warning);"></i>';
+            if (type === 'success') {
+                icon = '<i class="fa-solid fa-circle-check" style="color: var(--success);"></i>';
+            } else if (type === 'error') {
+                icon = '<i class="fa-solid fa-circle-xmark" style="color: var(--danger);"></i>';
+            } else if (type === 'warning') {
+                icon = '<i class="fa-solid fa-triangle-exclamation" style="color: var(--warning);"></i>';
+            }
 
             toast.className = `toast ${type}`;
-            toast.innerHTML = `<div style="font-size: 1.25rem; display: flex; align-items: center;">${icon}</div><div style="font-size: 0.8rem; font-weight: 600; color: var(--text-main);">${message}</div>`;
+            toast.innerHTML = `
+                <div style="font-size: 1.25rem; display: flex; align-items: center;">${icon}</div>
+                <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-main);">${message}</div>
+            `;
+
             container.appendChild(toast);
 
+            // Desvanecer y retirar automáticamente
             setTimeout(() => {
                 toast.style.opacity = '0';
                 toast.style.transform = 'translateY(15px)';
-                setTimeout(() => { toast.remove(); }, 300);
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
             }, 4500);
         }
     </script>
